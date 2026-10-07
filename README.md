@@ -30,7 +30,7 @@ It runs as your default **Android Digital Assistant** (`android.service.voice.Vo
 
 ### 🔍 1. Circle to Search Interactive Canvas
 * **Google Neon Glow Lasso:** Draw a freehand glowing lasso around any image, equation, text snippet, or UI element.
-* **Precision 8-Handle Box:** Switch to rectangular selection mode with 8 resize handles for pixel-perfect crops.
+* **Precision 8-Handle Box & Smooth Handle Pulling:** Once circled (or in box mode), 8 precision resize handles appear at all 4 corners and 4 edge centers with generous 52dp touch targets. You can freely pull and drag any of the 8 handles to fine-tune your exact crop area without accidentally triggering a new circle search line. Drag from inside the box to reposition, or touch outside to draw a new circle.
 * **Canva-Style Free Pan & Zoom:** 2-finger pan and pinch-to-zoom (0.6x up to 12x) to comfortably reach the extreme top or bottom edges of any app.
 * **Instant Clipboard Sync:** Selection crops are immediately saved to internal cache and synced to the Android clipboard.
 * **Uncongested Prompt Bar:** Professional, distraction-free prompt pill (`"Type or speak your question here..."`) housing only the text input, microphone button, and send button.
