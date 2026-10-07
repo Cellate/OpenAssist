@@ -1,7 +1,7 @@
 # OpenAssist
 
 <p align="center">
-  <img src="app/src/main/res/drawable/ic_launcher_foreground.xml" width="96" height="96" alt="OpenAssist Logo" />
+  <img src="OpenAssist.png" width="96" height="96" alt="OpenAssist Logo" />
 </p>
 
 <p align="center">
