@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Open-Source Digital Assistant & Circle to Search for Android</strong><br>
-  <em>Built for de-Googled ROMs (LineageOS, GrapheneOS, CalyxOS) & OEM Android (ColorOS, One UI, Pixel)</em>
+  <em>Built for de-Googled ROMs (LineageOS, GrapheneOS, CalyxOS) & OEM Android (ColorOS, One UI, Pixel, etc)</em>
 </p>
 
 <p align="center">
@@ -84,8 +84,19 @@ It runs as your default **Android Digital Assistant** (`android.service.voice.Vo
 
 ## 🚀 Getting Started & Setup
 
+### ⚡ Quick Start: Download Pre-built APK (No Build Required!)
+
+> **Tip:** You do not need to build the project from source or install Android Studio! Official pre-compiled APKs are ready for direct download.
+
+1. Head over to the **[Releases](https://github.com/Cellate/OpenAssist/releases)** page (e.g. **v1.34.0** or latest release).
+2. Under **Assets**, click to download `app-release.apk` (or `OpenAssist.apk`).
+3. Tap the downloaded file on your Android device to install (allow "Install unknown apps" if prompted).
+4. Follow the setup steps below to set it as your default digital assistant!
+
+---
+
 ### Step 1: Install the APK
-Download or build `OpenAssist.apk` and install it on your device.
+Download the pre-built APK from **[GitHub Releases](https://github.com/Cellate/OpenAssist/releases)** (recommended) or build `OpenAssist.apk` from source using the instructions below.
 
 ### Step 2: Set as Default Digital Assistant
 1. Go to **Settings → Apps → Default apps → Digital assistant app** (or **Voice input & assist**).
@@ -104,10 +115,16 @@ Download or build `OpenAssist.apk` and install it on your device.
 
 ---
 
-## 🛠️ Building the APK
+## 📦 How to Get the App
 
-### Option A: 1-Click Cloud Build via GitHub Actions (Recommended)
-You do not need Android Studio or a local Android SDK installed. GitHub Actions provides free cloud builders:
+### Option 1: Direct Download (Pre-built APK — Recommended & Fastest)
+* **No build tools or command line required!**
+* Go directly to **[GitHub Releases](https://github.com/Cellate/OpenAssist/releases)**.
+* Download the latest release APK (e.g. `app-release.apk` from v1.34.0).
+* Install directly on any Android 10+ phone or tablet.
+
+### Option 2: 1-Click Cloud Build via GitHub Actions
+If you fork or customize the source code, you do not need Android Studio or a local Android SDK installed. GitHub Actions provides free cloud builders:
 
 1. Clone or push this repository to GitHub on `main` or `master`.
 2. Push your changes:
@@ -124,7 +141,7 @@ You do not need Android Studio or a local Android SDK installed. GitHub Actions 
    * Uploads the build output to artifacts
 5. Click on the completed run and download the **OpenAssist-apk** artifact!
 
-### Option B: Local Command Line Build
+### Option 3: Local Command Line Build
 If you have Java 17 and the Android SDK installed locally:
 
 ```bash
