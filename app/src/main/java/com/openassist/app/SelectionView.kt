@@ -238,6 +238,26 @@ class SelectionView(context: Context) : View(context) {
     private fun hitFlags(x: Float, y: Float): Int {
         val b = box ?: return 0
         toView(b, tmp)
+        val handleRadius = 26f * density // Generous 52dp touch target for each handle
+        val cx = tmp.centerX()
+        val cy = tmp.centerY()
+
+        // Explicit hit-testing for all 8 handles
+        // Top row
+        if (hypot(x - tmp.left, y - tmp.top) <= handleRadius) return L or T
+        if (hypot(x - cx, y - tmp.top) <= handleRadius) return T
+        if (hypot(x - tmp.right, y - tmp.top) <= handleRadius) return R or T
+
+        // Middle row
+        if (hypot(x - tmp.left, y - cy) <= handleRadius) return L
+        if (hypot(x - tmp.right, y - cy) <= handleRadius) return R
+
+        // Bottom row
+        if (hypot(x - tmp.left, y - tmp.bottom) <= handleRadius) return L or B
+        if (hypot(x - cx, y - tmp.bottom) <= handleRadius) return B
+        if (hypot(x - tmp.right, y - tmp.bottom) <= handleRadius) return R or B
+
+        // Edge detection fallback (if finger touches along the perimeter borders)
         val inY = y >= tmp.top - slop && y <= tmp.bottom + slop
         val inX = x >= tmp.left - slop && x <= tmp.right + slop
         var f = 0
@@ -246,7 +266,7 @@ class SelectionView(context: Context) : View(context) {
         if (inX && abs(y - tmp.top) <= slop) f = f or T
         if (inX && abs(y - tmp.bottom) <= slop) f = f or B
         if ((f and L) != 0 && (f and R) != 0) f = f and (if (abs(x - tmp.left) < abs(x - tmp.right)) R.inv() else L.inv())
-        if ((f and T) != 0 && (f and B) != 0) f = f and (if (abs(y - tmp.top) < abs(y - bottom)) B.inv() else T.inv())
+        if ((f and T) != 0 && (f and B) != 0) f = f and (if (abs(y - tmp.top) < abs(y - tmp.bottom)) B.inv() else T.inv())
         return f
     }
 
@@ -266,11 +286,18 @@ class SelectionView(context: Context) : View(context) {
                 box?.let { boxAtDown.set(it) }
                 onStart?.invoke()
 
-                if (mode == Mode.BOX && box != null) {
+                if (box != null) {
                     val flags = hitFlags(e.x, e.y)
                     when {
-                        flags != 0 -> { state = State.RESIZE; resizeFlags = flags }
-                        insideBox(e.x, e.y) -> state = State.MOVE
+                        flags != 0 -> {
+                            state = State.RESIZE
+                            resizeFlags = flags
+                            circlePath.reset()
+                        }
+                        insideBox(e.x, e.y) -> {
+                            state = State.MOVE
+                            circlePath.reset()
+                        }
                         else -> startNewSelection(e.x, e.y, bmp)
                     }
                 } else {
@@ -368,6 +395,7 @@ class SelectionView(context: Context) : View(context) {
 
         val res = RectF(min(bx1, bx2), min(by1, by2), max(bx1, bx2), max(by1, by2))
         box = res
+        circlePath.reset()
         invalidate()
         onSelected?.invoke(RectF(res))
     }
