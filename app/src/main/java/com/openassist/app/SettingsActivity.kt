@@ -69,12 +69,15 @@ class SettingsActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = Prefs(this)
-        theme = Ui.theme(this)
-        modelStore = ModelStore(this)
-        window.statusBarColor = theme.BAR
-        window.navigationBarColor = theme.BAR
-        Ui.applySystemBars(this, theme)
+        try {
+            prefs = Prefs(this)
+            theme = Ui.theme(this)
+            modelStore = ModelStore(this)
+        } catch (e: Throwable) {
+            prefs = Prefs(this)
+            theme = Ui.Theme(isDark = true)
+            modelStore = ModelStore(this)
+        }
 
         val scroll = ScrollView(this).apply {
             setBackgroundColor(theme.BG)
@@ -87,6 +90,9 @@ class SettingsActivity : Activity() {
         }
         scroll.addView(col)
         setContentView(scroll)
+
+        // Apply system bars safely after content view is established
+        Ui.applySystemBars(this, theme)
 
         fun header(text: String) {
             val tv = TextView(this).apply {
@@ -640,16 +646,24 @@ class SettingsActivity : Activity() {
         col.addView(aboutCard)
 
         // Now that all UI elements are instantiated, refresh all view states safely!
-        updateModeButtonsUi()
-        refreshAll()
+        try {
+            updateModeButtonsUi()
+            refreshAll()
+        } catch (t: Throwable) {
+            android.util.Log.e("SettingsActivity", "Error during init refresh", t)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        if (::assistantStatus.isInitialized) {
-            assistantStatus.text = getString(R.string.st_assistant_on)
+        try {
+            if (::assistantStatus.isInitialized) {
+                assistantStatus.text = getString(R.string.st_assistant_on)
+            }
+            refreshAll()
+        } catch (t: Throwable) {
+            android.util.Log.e("SettingsActivity", "Error in onResume", t)
         }
-        refreshAll()
     }
 
     private fun updateModeButtonsUi() {
@@ -663,12 +677,12 @@ class SettingsActivity : Activity() {
     }
 
     private fun refreshAll() {
-        refreshAiServices()
-        refreshEngineViews()
-        refreshModelsList()
-        refreshLanguageChips()
-        refreshLangMappings()
-        refreshPipelineInfo()
+        try { refreshAiServices() } catch (t: Throwable) {}
+        try { refreshEngineViews() } catch (t: Throwable) {}
+        try { refreshModelsList() } catch (t: Throwable) {}
+        try { refreshLanguageChips() } catch (t: Throwable) {}
+        try { refreshLangMappings() } catch (t: Throwable) {}
+        try { refreshPipelineInfo() } catch (t: Throwable) {}
     }
 
     private fun refreshAiServices() {
