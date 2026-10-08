@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenAssist</string>
+    <string name="settings_title">OpenAssist सेटिंग्स</string>
+
+    <string name="hint_circle">स्क्रीन पर कुछ भी चुनें</string>
+    <string name="hint_no_screenshot">स्क्रीनशॉट नहीं मिला। Use screenshot चालू करने के लिए टैप करें।</string>
+    <string name="ask_hint">%1$s से पूछें</string>
+    <string name="btn_copy">कॉपी</string>
+    <string name="btn_whole">पूरी स्क्रीन</string>
+    <string name="btn_fit">फिट</string>
+    <string name="toast_copied">क्लिपबोर्ड पर कॉपी किया गया</string>
+    <string name="toast_copy_failed">कॉपी नहीं हो सका</string>
+    <string name="toast_nothing_selected">पहले एक चयन बॉक्स बनाएं</string>
+    <string name="toast_no_clip">पेस्ट करने के लिए क्लिपबोर्ड में कुछ नहीं है</string>
+    <string name="toast_stage_failed">%1$d फ़ाइल संलग्न नहीं हो सकी</string>
+    <string name="toast_stage_failed_generic">फ़ाइल संलग्न नहीं हो सकी</string>
+    <string name="selection_attached">चयन संलग्न</string>
+    <string name="attached_n">%1$d फ़ाइलें संलग्न</string>
+    <string name="cd_close">बंद करें</string>
+    <string name="cd_mic">बोलें</string>
+    <string name="cd_send">भेजें</string>
+    <string name="cd_attach">फ़ाइल संलग्न करें</string>
+    <string name="cd_paste">क्लिपबोर्ड से पेस्ट करें</string>
+    <string name="cd_remove">हटाएं</string>
+
+    <string name="voice_listening">सुन रहा है…</string>
+    <string name="err_no_recognizer">कोई स्पीच इंजन नहीं मिला।</string>
+    <string name="err_mic_permission">बोलकर टाइप करने के लिए माइक्रोफ़ोन अनुमति आवश्यक है।</string>
+    <string name="err_no_speech">सुनाई नहीं दिया। फिर से कोशिश करें।</string>
+    <string name="err_voice">वॉइस इनपुट विफल (%1$d)</string>
+
+    <string name="web_new_chat">नई चैट</string>
+    <string name="web_attach_alt">चयन संलग्न करें (वैकल्पिक)</string>
+    <string name="web_paste">पेस्ट</string>
+    <string name="web_open_browser">ब्राउज़र में खोलें</string>
+    <string name="web_settings">सेटिंग्स</string>
+    <string name="web_retry">पेज लोड नहीं हो सका। फिर से प्रयास करने के लिए टैप करें।</string>
+    <string name="web_no_selection">अभी तक कोई चयन नहीं।</string>
+    <string name="web_choose_ai">AI चुनें</string>
+    <string name="web_no_downloads">डाउनलोड समर्थित नहीं हैं।</string>
+    <string name="web_no_chatbox">चैट बॉक्स नहीं मिला।</string>
+
+    <string name="st_assistant">डिजिटल असिस्टेंट</string>
+    <string name="st_set_assistant">डिफ़ॉल्ट असिस्टेंट चुनें</string>
+    <string name="st_behaviour">व्यवहार</string>
+    <string name="st_new_chat">हर बार नई चैट शुरू करें</string>
+    <string name="st_new_chat_desc">AI पेज को हर बार रीलोड करता है।</string>
+    <string name="st_auto_attach">चयनित चित्र अपने आप संलग्न करें</string>
+    <string name="st_auto_attach_desc">चैट बॉक्स में चयन पेस्ट करता है।</string>
+    <string name="st_auto_send">सवाल अपने आप भेजें</string>
+    <string name="st_auto_send_desc">बोलने या टाइप करने के बाद अपने आप भेजें।</string>
+    <string name="st_auto_submit">सवाल अपने आप भेजें</string>
+    <string name="st_auto_submit_desc">बोलने या टाइप करने के बाद अपने आप भेजें।</string>
+    <string name="st_compose">चयन के बाद ओवरले में रहें</string>
+    <string name="st_compose_desc">चयन के तुरंत बाद सवाल बोलने या लिखने देता है। AI पर सीधे जाने के लिए बंद करें।</string>
+    <string name="st_circle_compose">चयन के बाद ओवरले में रहें</string>
+    <string name="st_circle_compose_desc">चयन के तुरंत बाद सवाल बोलने या लिखने देता है। AI पर सीधे जाने के लिए बंद करें।</string>
+</resources>
