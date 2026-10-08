@@ -95,41 +95,70 @@ object Ui {
             setOnClickListener { onClick() }
         }
 
+    @android.annotation.TargetApi(30)
+    private object Api30Helper {
+        fun setAppearance(activity: Activity, isDark: Boolean) {
+            try {
+                activity.window?.insetsController?.let { controller ->
+                    val lightStatus = !isDark
+                    val appearance = if (lightStatus) {
+                        android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
+                            android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                    } else 0
+                    controller.setSystemBarsAppearance(
+                        appearance,
+                        android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
+                            android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                    )
+                }
+            } catch (t: Throwable) {}
+        }
+    }
+
     fun applySystemBars(activity: Activity, theme: Theme) {
-        if (Build.VERSION.SDK_INT >= 30) {
-            val controller = activity.window.insetsController
-            if (controller != null) {
-                val lightStatus = !theme.isDark
-                val appearance = if (lightStatus) {
-                    android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
-                        android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
-                } else 0
-                controller.setSystemBarsAppearance(
-                    appearance,
-                    android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
-                        android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
-                )
+        try {
+            val window = activity.window ?: return
+            try {
+                window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                window.statusBarColor = theme.BAR
+                window.navigationBarColor = theme.BAR
+            } catch (t: Throwable) {}
+
+            val applyBars = {
+                try {
+                    if (Build.VERSION.SDK_INT >= 30) {
+                        Api30Helper.setAppearance(activity, theme.isDark)
+                    } else if (Build.VERSION.SDK_INT >= 26) {
+                        @Suppress("DEPRECATION")
+                        var flags = window.decorView.systemUiVisibility
+                        flags = if (!theme.isDark) {
+                            flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                        } else {
+                            flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv() and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
+                        }
+                        @Suppress("DEPRECATION")
+                        window.decorView.systemUiVisibility = flags
+                    } else if (Build.VERSION.SDK_INT >= 23) {
+                        @Suppress("DEPRECATION")
+                        var flags = window.decorView.systemUiVisibility
+                        flags = if (!theme.isDark) {
+                            flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        } else {
+                            flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                        }
+                        @Suppress("DEPRECATION")
+                        window.decorView.systemUiVisibility = flags
+                    }
+                } catch (t: Throwable) {}
             }
-        } else if (Build.VERSION.SDK_INT >= 26) {
-            @Suppress("DEPRECATION")
-            var flags = activity.window.decorView.systemUiVisibility
-            flags = if (!theme.isDark) {
-                flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-            } else {
-                flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv() and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
+
+            try {
+                window.decorView.post { applyBars() }
+            } catch (t: Throwable) {
+                applyBars()
             }
-            @Suppress("DEPRECATION")
-            activity.window.decorView.systemUiVisibility = flags
-        } else if (Build.VERSION.SDK_INT >= 23) {
-            @Suppress("DEPRECATION")
-            var flags = activity.window.decorView.systemUiVisibility
-            flags = if (!theme.isDark) {
-                flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else {
-                flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
-            @Suppress("DEPRECATION")
-            activity.window.decorView.systemUiVisibility = flags
+        } catch (t: Throwable) {
+            // Never crash activity
         }
     }
 }
