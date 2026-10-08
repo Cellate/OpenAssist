@@ -499,8 +499,8 @@ class OverlayActivity : Activity(), Speech.Callback {
         )
 
         root.setOnApplyWindowInsetsListener { _, insets ->
-            val top: Int
-            val bottom: Int
+            var top = dp(24)
+            var bottom = dp(24)
             try {
                 if (Build.VERSION.SDK_INT >= 30) {
                     val bars = insets.getInsets(WindowInsets.Type.systemBars())
