@@ -31,6 +31,10 @@ class Prefs(private val context: Context) {
     private val sp: SharedPreferences =
         context.applicationContext.getSharedPreferences("open_assist", Context.MODE_PRIVATE)
 
+    var isDarkMode: Boolean
+        get() = sp.getBoolean("dark_mode", true)
+        set(v) { sp.edit().putBoolean("dark_mode", v).apply() }
+
     var processingMode: String
         get() = sp.getString("processing_mode", MODE_POST_PROCESSING) ?: MODE_POST_PROCESSING
         set(v) { sp.edit().putString("processing_mode", v).apply() }
