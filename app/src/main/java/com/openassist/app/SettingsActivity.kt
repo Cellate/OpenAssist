@@ -34,6 +34,7 @@ class SettingsActivity : Activity() {
 
     private lateinit var prefs: Prefs
     private lateinit var modelStore: ModelStore
+    private lateinit var theme: Ui.Theme
     private val handler = Handler(Looper.getMainLooper())
 
     private lateinit var assistantStatus: TextView
@@ -69,12 +70,14 @@ class SettingsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Prefs(this)
+        theme = Ui.theme(this)
         modelStore = ModelStore(this)
-        window.statusBarColor = Ui.BAR
-        window.navigationBarColor = Ui.BAR
+        window.statusBarColor = theme.BAR
+        window.navigationBarColor = theme.BAR
+        Ui.applySystemBars(this, theme)
 
         val scroll = ScrollView(this).apply {
-            setBackgroundColor(Ui.BG)
+            setBackgroundColor(theme.BG)
             isFillViewport = true
         }
         val col = LinearLayout(this).apply {
@@ -89,7 +92,7 @@ class SettingsActivity : Activity() {
             val tv = TextView(this).apply {
                 this.text = text
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-                setTextColor(Ui.ACCENT)
+                setTextColor(theme.ACCENT)
                 typeface = Typeface.DEFAULT_BOLD
                 setPadding(0, Ui.dp(this@SettingsActivity, 20), 0, Ui.dp(this@SettingsActivity, 8))
             }
@@ -100,7 +103,7 @@ class SettingsActivity : Activity() {
             val tv = TextView(this).apply {
                 this.text = text
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-                setTextColor(Color.parseColor("#93C5FD"))
+                setTextColor(if (theme.isDark) Color.parseColor("#93C5FD") else Color.parseColor("#1D4ED8"))
                 setPadding(0, Ui.dp(this@SettingsActivity, 10), 0, Ui.dp(this@SettingsActivity, 4))
             }
             col.addView(tv)
@@ -109,7 +112,7 @@ class SettingsActivity : Activity() {
         fun cardLayout(): LinearLayout {
             return LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
-                background = Ui.rounded(Ui.SURFACE, Ui.dp(this@SettingsActivity, 14).toFloat())
+                background = Ui.rounded(theme.CARD, Ui.dp(this@SettingsActivity, 14).toFloat())
                 val pad = Ui.dp(this@SettingsActivity, 14)
                 setPadding(pad, pad, pad, pad)
                 val lp = LinearLayout.LayoutParams(
@@ -135,12 +138,12 @@ class SettingsActivity : Activity() {
             textCol.addView(TextView(this).apply {
                 text = title
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
-                setTextColor(Ui.TEXT)
+                setTextColor(theme.TEXT)
             })
             textCol.addView(TextView(this).apply {
                 text = desc
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-                setTextColor(Ui.MUTED)
+                setTextColor(theme.MUTED)
             })
             val sw = Switch(this).apply {
                 isChecked = initial
@@ -151,20 +154,54 @@ class SettingsActivity : Activity() {
             col.addView(row)
         }
 
+        // --- 0. Appearance / Theme Section ---
+        header("Appearance")
+        val appearanceCard = cardLayout()
+        val themeRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, Ui.dp(this@SettingsActivity, 4), 0, Ui.dp(this@SettingsActivity, 4))
+        }
+        val themeTextCol = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        themeTextCol.addView(TextView(this).apply {
+            text = "Dark Mode"
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+            setTextColor(theme.TEXT)
+        })
+        themeTextCol.addView(TextView(this).apply {
+            text = if (prefs.isDarkMode) "Gemini Dark Mode active" else "Material 3 Light Mode active"
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            setTextColor(theme.MUTED)
+        })
+        val themeSwitch = Switch(this).apply {
+            isChecked = prefs.isDarkMode
+            setOnCheckedChangeListener { _, isDark ->
+                prefs.isDarkMode = isDark
+                recreate()
+            }
+        }
+        themeRow.addView(themeTextCol)
+        themeRow.addView(themeSwitch)
+        appearanceCard.addView(themeRow)
+        col.addView(appearanceCard)
+
         // --- 1. Default Assistant Section ---
         header(getString(R.string.st_assistant))
         val assistantCard = cardLayout()
         assistantStatus = TextView(this).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-            setTextColor(Ui.TEXT)
+            setTextColor(theme.TEXT)
             text = getString(R.string.st_assistant_on)
         }
         assistantCard.addView(assistantStatus)
 
         val setBtn = Button(this).apply {
             text = getString(R.string.st_set_assistant)
-            background = Ui.rounded(Ui.SURFACE_HI, Ui.dp(this@SettingsActivity, 8).toFloat())
-            setTextColor(Ui.ACCENT)
+            background = Ui.rounded(theme.SURFACE_HI, Ui.dp(this@SettingsActivity, 8).toFloat())
+            setTextColor(theme.ACCENT)
             setOnClickListener {
                 try {
                     startActivity(Intent(Settings.ACTION_VOICE_INPUT_SETTINGS))
