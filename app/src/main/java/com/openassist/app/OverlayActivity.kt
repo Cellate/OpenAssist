@@ -439,10 +439,19 @@ class OverlayActivity : Activity(), Speech.Callback {
         if (!::topBar.isInitialized) return
         val topContainer = (topBar.parent as? View) ?: topBar
         val lp = (topContainer.layoutParams as? FrameLayout.LayoutParams) ?: return
-        lp.gravity = Gravity.TOP or Gravity.END
-        lp.topMargin = insetTop + dp(8)
-        lp.rightMargin = maxOf(dp(20), insetRight + dp(20))
-        lp.leftMargin = maxOf(dp(16), insetLeft + dp(16))
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        if (isLandscape) {
+            // In landscape: position chips on top-start to avoid right-edge 3-button navigation completely
+            lp.gravity = Gravity.TOP or Gravity.START
+            lp.topMargin = insetTop + dp(8)
+            lp.leftMargin = maxOf(dp(20), insetLeft + dp(16))
+            lp.rightMargin = maxOf(dp(88), insetRight + dp(48))
+        } else {
+            lp.gravity = Gravity.TOP or Gravity.END
+            lp.topMargin = insetTop + dp(8)
+            lp.rightMargin = maxOf(dp(18), insetRight + dp(16))
+            lp.leftMargin = maxOf(dp(18), insetLeft + dp(16))
+        }
         topContainer.layoutParams = lp
         topContainer.requestLayout()
     }
@@ -468,14 +477,14 @@ class OverlayActivity : Activity(), Speech.Callback {
         )
 
         if (isLandscape) {
-            // In landscape: limit width comfortably and center horizontally to avoid navigation bar buttons on either side
-            val maxAllowedWidth = minOf(dp(500), (screenWidth * 0.65f).toInt())
+            // In landscape: limit width and position toward the left (Gravity.START) with ample right margin
+            // so the pill is moved to the left and never overlaps the 3-button navigation bar
+            val maxAllowedWidth = minOf(dp(480), (screenWidth * 0.58f).toInt())
             lp.width = maxAllowedWidth
-            lp.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            lp.gravity = Gravity.BOTTOM or Gravity.START
 
-            // Generous margins from right and left navigation bars / cutouts
-            val safeRightMargin = maxOf(dp(36), insetRight + dp(32))
-            val safeLeftMargin = maxOf(dp(36), insetLeft + dp(32))
+            val safeLeftMargin = maxOf(dp(20), insetLeft + dp(16))
+            val safeRightMargin = maxOf(dp(88), insetRight + dp(48))
             val safeBottomMargin = maxOf(dp(16), insetBottom + dp(12))
             lp.setMargins(safeLeftMargin, 0, safeRightMargin, safeBottomMargin)
         } else {
@@ -915,7 +924,9 @@ class OverlayActivity : Activity(), Speech.Callback {
     private fun toggleMic() {
         if (listening) {
             if (prefs.isLocalModelMode && prefs.isPostProcessing) {
-                showListeningCard(speech.currentEngineName, "Transcribing with Whisper...")
+                if (::input.isInitialized) {
+                    input.hint = "Transcribing with Whisper..."
+                }
             }
             speech.stop()
             return
