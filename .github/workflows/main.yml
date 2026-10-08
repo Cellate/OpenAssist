@@ -53,7 +53,7 @@ jobs:
 
       - name: Build release APK
         run: |
-          if [ -f "./gradlew" ]; then
+          if [ -f "./gradlew" ] && [ -f "gradle/wrapper/gradle-wrapper.jar" ]; then
             chmod +x ./gradlew
             ./gradlew assembleRelease --no-daemon --stacktrace
           else
