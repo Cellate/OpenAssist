@@ -116,7 +116,11 @@ class OverlayActivity : Activity(), Speech.Callback {
         }
         window.statusBarColor = Color.TRANSPARENT
         window.navigationBarColor = Color.TRANSPARENT
-        window.isNavigationBarContrastEnforced = false
+        if (Build.VERSION.SDK_INT >= 29) {
+            try {
+                window.isNavigationBarContrastEnforced = false
+            } catch (e: Throwable) {}
+        }
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         buildUi()
@@ -411,7 +415,6 @@ class OverlayActivity : Activity(), Speech.Callback {
             background = null
             setTextColor(Ui.TEXT)
             setHintTextColor(Ui.MUTED)
-            updateInputHint()
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             // IME_FLAG_NO_EXTRACT_UI prevents fullscreen/centered extracted editor in landscape!
@@ -433,6 +436,7 @@ class OverlayActivity : Activity(), Speech.Callback {
                 }
             }
         }
+        updateInputHint()
         searchCenter.addView(
             input,
             FrameLayout.LayoutParams(
@@ -497,27 +501,38 @@ class OverlayActivity : Activity(), Speech.Callback {
         root.setOnApplyWindowInsetsListener { _, insets ->
             val top: Int
             val bottom: Int
-            if (Build.VERSION.SDK_INT >= 30) {
-                val bars = insets.getInsets(WindowInsets.Type.systemBars())
-                val ime = insets.getInsets(WindowInsets.Type.ime())
-                val cutout = insets.getInsets(WindowInsets.Type.displayCutout())
-                top = maxOf(bars.top, cutout.top)
-                bottom = maxOf(bars.bottom, ime.bottom, cutout.bottom)
-                currentCutoutLeft = cutout.left
-                currentCutoutRight = cutout.right
-            } else {
-                top = insets.systemWindowInsetTop
-                bottom = insets.systemWindowInsetBottom
-                if (Build.VERSION.SDK_INT >= 28) {
-                    val dc = insets.displayCutout
-                    currentCutoutLeft = dc?.safeInsetLeft ?: 0
-                    currentCutoutRight = dc?.safeInsetRight ?: 0
+            try {
+                if (Build.VERSION.SDK_INT >= 30) {
+                    val bars = insets.getInsets(WindowInsets.Type.systemBars())
+                    val ime = insets.getInsets(WindowInsets.Type.ime())
+                    val cutout = insets.getInsets(WindowInsets.Type.displayCutout())
+                    top = maxOf(bars.top, cutout.top)
+                    bottom = maxOf(bars.bottom, ime.bottom, cutout.bottom)
+                    currentCutoutLeft = cutout.left
+                    currentCutoutRight = cutout.right
+                } else {
+                    top = insets.systemWindowInsetTop
+                    bottom = insets.systemWindowInsetBottom
+                    if (Build.VERSION.SDK_INT >= 28) {
+                        val dc = insets.displayCutout
+                        currentCutoutLeft = dc?.safeInsetLeft ?: 0
+                        currentCutoutRight = dc?.safeInsetRight ?: 0
+                    }
                 }
+            } catch (e: Throwable) {
+                top = dp(24)
+                bottom = dp(24)
             }
             currentBottomInset = bottom
-            topBar.setPadding(dp(8), top + dp(8), dp(8), 0)
-            (hint.layoutParams as FrameLayout.LayoutParams).topMargin = top + dp(64)
-            hint.requestLayout()
+            if (::topBar.isInitialized) {
+                topBar.setPadding(dp(8), top + dp(8), dp(8), 0)
+            }
+            if (::hint.isInitialized) {
+                (hint.layoutParams as? FrameLayout.LayoutParams)?.let { lp ->
+                    lp.topMargin = top + dp(64)
+                    hint.requestLayout()
+                }
+            }
 
             updatePanelLayout()
             insets
@@ -534,6 +549,7 @@ class OverlayActivity : Activity(), Speech.Callback {
     }
 
     private fun updatePanelLayout() {
+        if (!::panel.isInitialized) return
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val dm = resources.displayMetrics
         val screenWidth = dm.widthPixels
@@ -611,6 +627,7 @@ class OverlayActivity : Activity(), Speech.Callback {
     }
 
     private fun updateInputHint() {
+        if (!::input.isInitialized) return
         val currentService = AiServices.current(prefs)
         input.hint = getString(R.string.ask_hint, currentService.name)
     }
@@ -813,6 +830,7 @@ class OverlayActivity : Activity(), Speech.Callback {
     }
 
     private fun updateSendVisibility() {
+        if (!::input.isInitialized || !::sendBtn.isInitialized) return
         val has = input.text.isNotBlank() || allFiles().isNotEmpty()
         sendBtn.visibility = if (has) View.VISIBLE else View.GONE
     }
@@ -1038,30 +1056,41 @@ class OverlayActivity : Activity(), Speech.Callback {
     }
 
     private fun showListeningCard(engineName: String, statusText: String) {
+        if (!::listeningCard.isInitialized) return
         listeningCard.visibility = View.VISIBLE
         listeningTitle.text = "● LIVE MIC ACTIVE"
         listeningEngineChip.text = engineName
         listeningPreviewText.text = statusText
 
         // Animate mic button in bottom pill with active red / coral glow
-        micBtn.background = Ui.pill(this, Ui.GEMINI_RED)
-        micBtn.imageTintList = ColorStateList.valueOf(Color.WHITE)
-        searchVisualizerContainer.visibility = View.VISIBLE
+        if (::micBtn.isInitialized) {
+            micBtn.background = Ui.pill(this, Ui.GEMINI_RED)
+            micBtn.imageTintList = ColorStateList.valueOf(Color.WHITE)
+        }
+        if (::searchVisualizerContainer.isInitialized) {
+            searchVisualizerContainer.visibility = View.VISIBLE
+        }
 
         startDotPulse()
     }
 
     override fun onPartial(text: String) {
+        if (!::input.isInitialized) return
         val combined = if (basePromptBeforeSpeech.isNotEmpty()) "$basePromptBeforeSpeech $text" else text
         input.setText(combined)
         input.setSelection(input.text.length)
         updateSendVisibility()
-        listeningPreviewText.text = "Heard: \"$text\""
+        if (::listeningPreviewText.isInitialized) {
+            listeningPreviewText.text = "Heard: \"$text\""
+        }
     }
 
     override fun onFinal(text: String) {
+        if (!::input.isInitialized) return
         val combined = if (basePromptBeforeSpeech.isNotEmpty()) "$basePromptBeforeSpeech $text" else text
-        listeningPreviewText.text = "Received: \"$text\""
+        if (::listeningPreviewText.isInitialized) {
+            listeningPreviewText.text = "Received: \"$text\""
+        }
         input.setText(combined)
         input.setSelection(input.text.length)
         basePromptBeforeSpeech = combined
@@ -1126,31 +1155,41 @@ class OverlayActivity : Activity(), Speech.Callback {
 
     override fun onError(message: String) {
         onStateChanged(false, speech.currentEngineName)
-        listeningCard.visibility = View.VISIBLE
-        listeningTitle.text = "Microphone Idle"
-        listeningPreviewText.text = message
-        listeningCard.postDelayed({
-            if (!listening) listeningCard.visibility = View.GONE
-        }, 2200)
+        if (::listeningCard.isInitialized) {
+            listeningCard.visibility = View.VISIBLE
+            if (::listeningTitle.isInitialized) listeningTitle.text = "Microphone Idle"
+            if (::listeningPreviewText.isInitialized) listeningPreviewText.text = message
+            listeningCard.postDelayed({
+                if (!listening && ::listeningCard.isInitialized) listeningCard.visibility = View.GONE
+            }, 2200)
+        }
     }
 
     override fun onStateChanged(listening: Boolean, engineName: String) {
         this.listening = listening
-        micBtn.background = Ui.pill(this, if (listening) Ui.GEMINI_RED else Ui.SURFACE_HI)
-        micBtn.imageTintList = ColorStateList.valueOf(
-            if (listening) Color.WHITE else Ui.TEXT
-        )
-        searchVisualizerContainer.visibility = if (listening) View.VISIBLE else View.GONE
+        if (::micBtn.isInitialized) {
+            micBtn.background = Ui.pill(this, if (listening) Ui.GEMINI_RED else Ui.SURFACE_HI)
+            micBtn.imageTintList = ColorStateList.valueOf(
+                if (listening) Color.WHITE else Ui.TEXT
+            )
+        }
+        if (::searchVisualizerContainer.isInitialized) {
+            searchVisualizerContainer.visibility = if (listening) View.VISIBLE else View.GONE
+        }
         if (listening) {
             showListeningCard(engineName, "Listening... Speak now")
-            input.hint = "Listening via $engineName..."
+            if (::input.isInitialized) {
+                input.hint = "Listening via $engineName..."
+            }
         } else {
             stopDotPulse()
             resetWaveBars()
             updateInputHint()
-            listeningCard.postDelayed({
-                if (!this.listening) listeningCard.visibility = View.GONE
-            }, 600)
+            if (::listeningCard.isInitialized) {
+                listeningCard.postDelayed({
+                    if (!this.listening && ::listeningCard.isInitialized) listeningCard.visibility = View.GONE
+                }, 600)
+            }
         }
     }
 
