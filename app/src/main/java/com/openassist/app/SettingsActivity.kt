@@ -39,9 +39,11 @@ class SettingsActivity : Activity() {
     private lateinit var assistantStatus: TextView
     private lateinit var engineSelectBtn: Button
     private lateinit var engineStatusText: TextView
+
     private lateinit var localModelsContainer: LinearLayout
     private lateinit var activeModelBadge: TextView
     private lateinit var langMappingContainer: LinearLayout
+
     private lateinit var postProcBtn: Button
     private lateinit var realTimeBtn: Button
 
@@ -58,17 +60,16 @@ class SettingsActivity : Activity() {
     private val RC_MODEL_PICK = 42
     private val RC_TEST_SPEECH = 43
     private val RC_MIC_PERMISSION = 101
-
     private var testSpeech: Speech? = null
     private var isTesting = false
     private var isRecordingLocal = false
     private var isTranscribing = false
+    private var baseTestTextBeforeSpeech = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Prefs(this)
         modelStore = ModelStore(this)
-
         window.statusBarColor = Ui.BAR
         window.navigationBarColor = Ui.BAR
 
@@ -192,7 +193,6 @@ class SettingsActivity : Activity() {
         // --- 1B. AI Web Assistant & Custom AI Services ---
         header("AI Web Assistant & Custom AI Services")
         val aiCard = cardLayout()
-
         val topAiRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -202,7 +202,6 @@ class SettingsActivity : Activity() {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             setTextColor(Ui.TEXT)
         })
-
         activeAiBadge = TextView(this).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             setTextColor(Color.WHITE)
@@ -248,7 +247,6 @@ class SettingsActivity : Activity() {
             }
             layoutParams = lp
         }
-
         val addCustomAiBtn = Button(this).apply {
             text = "+ Add Custom Web Assistant"
             background = Ui.rounded(Color.parseColor("#2563EB"), Ui.dp(this@SettingsActivity, 8).toFloat())
@@ -276,7 +274,6 @@ class SettingsActivity : Activity() {
         }
         aiActionsRow.addView(openActiveAiBtn)
         aiCard.addView(aiActionsRow)
-
         col.addView(aiCard)
 
         // --- 2. Voice Input Engine & Whisper Models ---
@@ -319,7 +316,6 @@ class SettingsActivity : Activity() {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             setTextColor(Ui.TEXT)
         })
-
         activeModelBadge = TextView(this).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             setTextColor(Color.WHITE)
@@ -359,7 +355,7 @@ class SettingsActivity : Activity() {
             setPadding(0, Ui.dp(this@SettingsActivity, 10), 0, 0)
         }
         val loadModelBtn = Button(this).apply {
-            text = "📁 Import Model (.bin)"
+            text = "📥 Import Model (.bin)"
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             background = Ui.rounded(Ui.ACCENT, Ui.dp(this@SettingsActivity, 8).toFloat())
             setTextColor(Ui.ON_ACCENT)
@@ -470,7 +466,7 @@ class SettingsActivity : Activity() {
             visibility = View.GONE
             val pad = Ui.dp(this@SettingsActivity, 8)
             setPadding(pad, pad, pad, pad)
-            text = "LIVE MIC ACTIVE ● Listening... Speak now (Audio is never stored)"
+            text = "LIVE MIC ACTIVE • Listening... Speak now (Audio is never stored)"
         }
         testCard.addView(testStatusBanner)
 
@@ -600,7 +596,7 @@ class SettingsActivity : Activity() {
         header(getString(R.string.st_about))
         val aboutCard = cardLayout()
         aboutCard.addView(TextView(this).apply {
-            text = "OpenAssist v0.2.0 — Offline Multi-Model Whisper Engine\nPrivacy First: Audio stays on your device when using Local or FUTO modes."
+            text = "OpenAssist v0.2.0 • Offline Multi-Model Whisper Engine\nPrivacy First: Audio stays on your device when using Local or FUTO modes."
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             setTextColor(Ui.MUTED)
         })
@@ -645,7 +641,6 @@ class SettingsActivity : Activity() {
 
         customAiContainer.removeAllViews()
         val customServices = prefs.getCustomServices()
-
         if (customServices.isEmpty()) {
             customAiContainer.addView(TextView(this).apply {
                 text = "No custom web assistants added yet. Tap '+ Add Custom Web Assistant' below to connect Ollama, Open WebUI, or new AI models."
@@ -677,7 +672,6 @@ class SettingsActivity : Activity() {
                 }
                 layoutParams = lp
             }
-
             val infoCol = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
@@ -739,7 +733,7 @@ class SettingsActivity : Activity() {
     private fun showAiServiceSelectorDialog() {
         val allServices = AiServices.all(prefs)
         val names = allServices.map {
-            if (it.id == prefs.serviceId) "● ${it.name} (Active)" else it.name
+            if (it.id == prefs.serviceId) "✓ ${it.name} (Active)" else it.name
         }.toTypedArray()
 
         AlertDialog.Builder(this)
@@ -805,7 +799,7 @@ class SettingsActivity : Activity() {
                 val currentModel = prefs.getActiveLocalModel()
                 val modelName = currentModel?.name ?: "None"
                 val modeLabel = if (prefs.isPostProcessing) "Post-Processing" else "Real-Time"
-                engineSelectBtn.text = "Local Model Mode ($modelName — $modeLabel)"
+                engineSelectBtn.text = "Local Model Mode ($modelName • $modeLabel)"
                 engineSelectBtn.background = Ui.rounded(Color.parseColor("#2563EB"), Ui.dp(this, 8).toFloat())
                 engineStatusText.text = "Active: Offline Multi-Model Whisper ($modeLabel). Transcriptions run on-device with zero network latency."
             }
@@ -832,6 +826,7 @@ class SettingsActivity : Activity() {
         localModelsContainer.removeAllViews()
         val models = modelStore.getModels()
         val activeModel = prefs.getActiveLocalModel()
+
         activeModelBadge.text = activeModel?.name ?: "No model active"
 
         if (models.isEmpty()) {
@@ -869,6 +864,7 @@ class SettingsActivity : Activity() {
                 setTextColor(if (isDefault) Color.parseColor("#93C5FD") else Ui.TEXT)
                 typeface = if (isDefault) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
             })
+
             val details = StringBuilder()
             if (m.sizeMb.isNotBlank()) details.append(m.sizeMb)
             if (isDefault) details.append(" • Default Active Model")
@@ -952,6 +948,7 @@ class SettingsActivity : Activity() {
         if (!::langMappingContainer.isInitialized) return
         langMappingContainer.removeAllViews()
         val models = modelStore.getModels()
+
         val langs = listOf(
             Triple(VoiceLang.HINGLISH, "Hinglish (Default)", "English script for Hindi speech (e.g., 'kya haal hai')"),
             Triple(VoiceLang.HINDI, "Hindi (Secondary)", "Devanagari script (e.g., 'क्या हाल है')"),
@@ -1161,12 +1158,10 @@ class SettingsActivity : Activity() {
             }
             return
         }
-
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), RC_MIC_PERMISSION)
             return
         }
-
         startTestSpeech()
     }
 
@@ -1174,6 +1169,7 @@ class SettingsActivity : Activity() {
         testSpeech?.destroy()
         isTesting = true
         isTranscribing = false
+
         val activeModel = prefs.getActiveLocalModel()
         val engineLabel = prefs.getEngineChipLabel()
         val lang = prefs.voiceLang
@@ -1192,18 +1188,19 @@ class SettingsActivity : Activity() {
         testStatusBanner.visibility = View.VISIBLE
         if (prefs.isLocalModelMode) {
             testStatusBanner.text = if (isPost) {
-                "● RECORDING AUDIO ($engineLabel) — Speak now! Tap 'Stop & Transcribe' when done."
+                "● RECORDING AUDIO ($engineLabel) • Speak now! Tap 'Stop & Transcribe' when done."
             } else {
-                "● LIVE MIC ACTIVE ($engineLabel) — Listening for ${lang.label}... Speak now!"
+                "● LIVE MIC ACTIVE ($engineLabel) • Listening for ${lang.label}... Speak now!"
             }
         } else {
             testStatusBanner.text = "● CONNECTING MIC ($engineLabel)..."
         }
 
+        baseTestTextBeforeSpeech = testTextBox.text.toString().trim()
         val speech = Speech(this, prefs, object : Speech.Callback {
             override fun onStarting(engineName: String) {
                 if (isTranscribing) {
-                    testStatusBanner.text = "⚙ TRANSCRIBING ($engineName)..."
+                    testStatusBanner.text = "⏳ TRANSCRIBING ($engineName)..."
                 } else if (!prefs.isLocalModelMode) {
                     testStatusBanner.text = "● CONNECTING MIC ($engineName)..."
                 }
@@ -1211,32 +1208,35 @@ class SettingsActivity : Activity() {
 
             override fun onReadyForSpeech(engineName: String) {
                 if (isPost) {
-                    testStatusBanner.text = "● RECORDING AUDIO ($engineName) — Speak now! Tap 'Stop & Transcribe' when done."
+                    testStatusBanner.text = "● RECORDING AUDIO ($engineName) • Speak now! Tap 'Stop & Transcribe' when done."
                 } else {
-                    testStatusBanner.text = "● LIVE MIC ACTIVE ($engineName) — Listening for ${lang.label}... Speak now!"
+                    testStatusBanner.text = "● LIVE MIC ACTIVE ($engineName) • Listening for ${lang.label}... Speak now!"
                 }
             }
 
             override fun onRmsChanged(rmsdB: Float) {
                 if (isTesting && !isTranscribing) {
-                    val bars = " ▂▃▄▅▆▇█"
+                    val bars = "▁▂▃▄▅▆▇█"
                     val idx = ((rmsdB / 100f) * bars.length).toInt().coerceIn(0, bars.length - 1)
                     val symbol = bars[idx]
                     if (isPost) {
-                        testStatusBanner.text = "● RECORDING [$symbol] ($engineLabel) — Speak now! Tap 'Stop & Transcribe' when done."
+                        testStatusBanner.text = "● RECORDING [$symbol] ($engineLabel) • Speak now! Tap 'Stop & Transcribe' when done."
                     }
                 }
             }
 
             override fun onPartial(text: String) {
-                testTextBox.setText(text)
+                val combined = if (baseTestTextBeforeSpeech.isNotEmpty()) "$baseTestTextBeforeSpeech $text" else text
+                testTextBox.setText(combined)
                 testTextBox.setSelection(testTextBox.text.length)
             }
 
             override fun onFinal(text: String) {
                 isTranscribing = false
-                testTextBox.setText(text)
+                val combined = if (baseTestTextBeforeSpeech.isNotEmpty()) "$baseTestTextBeforeSpeech $text" else text
+                testTextBox.setText(combined)
                 testTextBox.setSelection(testTextBox.text.length)
+                baseTestTextBeforeSpeech = combined
                 stopTestSpeech()
                 Toast.makeText(this@SettingsActivity, "Transcription complete!", Toast.LENGTH_SHORT).show()
             }
@@ -1287,7 +1287,6 @@ class SettingsActivity : Activity() {
                 Toast.makeText(this@SettingsActivity, "Keyboard voice mode active. Tap mic on keyboard to dictate.", Toast.LENGTH_SHORT).show()
             }
         })
-
         testSpeech = speech
         speech.start()
     }
@@ -1295,9 +1294,9 @@ class SettingsActivity : Activity() {
     private fun stopLocalRecordingAndTranscribe() {
         isTranscribing = true
         testMicBtn.isEnabled = false
-        testMicBtn.text = "⚙ Transcribing..."
+        testMicBtn.text = "⏳ Transcribing..."
         testMicBtn.background = Ui.rounded(Color.parseColor("#3B82F6"), Ui.dp(this, 8).toFloat())
-        testStatusBanner.text = "⏹ STOPPED RECORDING — Processing audio with Whisper..."
+        testStatusBanner.text = "⏳ STOPPED RECORDING • Processing audio with Whisper..."
         testSpeech?.stop()
     }
 
@@ -1321,12 +1320,13 @@ class SettingsActivity : Activity() {
             val matches = data.getStringArrayListExtra(android.speech.RecognizerIntent.EXTRA_RESULTS)
             val raw = matches?.firstOrNull()?.trim() ?: ""
             val out = if (prefs.voiceLang == VoiceLang.HINGLISH) Translit.toHinglish(raw) else raw
-            testTextBox.setText(out)
+            val combined = if (baseTestTextBeforeSpeech.isNotEmpty()) "$baseTestTextBeforeSpeech $out" else out
+            testTextBox.setText(combined)
             testTextBox.setSelection(testTextBox.text.length)
+            baseTestTextBeforeSpeech = combined
             stopTestSpeech()
             return
         }
-
         if (requestCode == RC_MODEL_PICK && resultCode == RESULT_OK && data != null) {
             val uri = data.data ?: return
             val takeFlags = data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
@@ -1348,7 +1348,6 @@ class SettingsActivity : Activity() {
             } catch (e: Exception) {}
 
             Toast.makeText(this, "Importing $fileName into offline storage...", Toast.LENGTH_SHORT).show()
-
             Thread({
                 val newModel = modelStore.importModelFromUri(this@SettingsActivity, uri, fileName, fileSize)
                 prefs.recognizer = Prefs.ENGINE_LOCAL_MODEL
