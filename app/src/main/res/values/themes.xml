@@ -3,6 +3,9 @@
     <style name="Theme.OpenAssist" parent="android:Theme.DeviceDefault.NoActionBar">
         <item name="android:windowBackground">@color/bg</item>
         <item name="android:colorAccent">@color/accent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:navigationBarColor">@color/bg</item>
     </style>
 
     <style name="Theme.OpenAssist.Overlay" parent="android:Theme.DeviceDefault.NoActionBar">
