@@ -50,7 +50,6 @@ class WebActivity : Activity(), Speech.Callback {
         const val EXTRA_TEXT = "text"
         const val EXTRA_SUBMIT = "submit"
         const val EXTRA_FILES = "files"
-
         const val MODE_ASK = "ask"
         const val MODE_IMAGE = "image"
         const val MODE_TEXT = "text"
@@ -99,7 +98,6 @@ class WebActivity : Activity(), Speech.Callback {
         super.onCreate(savedInstanceState)
         prefs = Prefs(this)
         speech = Speech(this, prefs, this)
-
         window.statusBarColor = Ui.BAR
         window.navigationBarColor = Ui.BAR
 
@@ -133,7 +131,6 @@ class WebActivity : Activity(), Speech.Callback {
             setBackgroundColor(Ui.BAR)
             setPadding(dp(8), 0, dp(4), 0)
         }
-
         serviceBtn = TextView(this).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             setTextColor(Ui.TEXT)
@@ -143,18 +140,14 @@ class WebActivity : Activity(), Speech.Callback {
         }
         bar.addView(serviceBtn)
         bar.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
-
         langBtn = Ui.chip(this, "", false) { cycleLang() }
         bar.addView(langBtn)
         val sp = View(this).apply { layoutParams = LinearLayout.LayoutParams(dp(4), 1) }
         bar.addView(sp)
-
         engineBtn = Ui.chip(this, "", false) { toggleEngineMethod() }
         bar.addView(engineBtn)
-
         micBtn = Ui.iconButton(this, R.drawable.ic_mic, getString(R.string.cd_mic)) { toggleVoice(false) }
         bar.addView(micBtn)
-
         bar.addView(Ui.iconButton(this, R.drawable.ic_paste, getString(R.string.web_paste)) { pasteNow() })
         val menu = Ui.iconButton(this, R.drawable.ic_settings, getString(R.string.web_settings)) {}
         menu.setOnClickListener { showMenu(menu) }
@@ -165,7 +158,6 @@ class WebActivity : Activity(), Speech.Callback {
             visibility = View.GONE
             progressTintList = ColorStateList.valueOf(Ui.ACCENT)
         }
-
         status = TextView(this).apply {
             visibility = View.GONE
             setTextColor(Ui.TEXT)
@@ -173,7 +165,6 @@ class WebActivity : Activity(), Speech.Callback {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             setPadding(dp(14), dp(8), dp(14), dp(8))
         }
-
         web = ChatWebView(this).apply {
             onFiles = { files, failed ->
                 if (failed > 0) Toast.makeText(this@WebActivity, "Failed to attach file", Toast.LENGTH_SHORT).show()
@@ -185,7 +176,6 @@ class WebActivity : Activity(), Speech.Callback {
         root.addView(progress, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(2)))
         root.addView(status, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         root.addView(web, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
-
         setContentView(root)
         updateToolbar()
     }
@@ -224,6 +214,7 @@ class WebActivity : Activity(), Speech.Callback {
         val list = AiServices.all(prefs)
         val items = list.map { it.name }.toMutableList()
         items.add("➕ Add Custom AI Web Assistant...")
+
         AlertDialog.Builder(this)
             .setTitle(R.string.web_choose_ai)
             .setItems(items.toTypedArray()) { _, which: Int ->
@@ -299,7 +290,6 @@ class WebActivity : Activity(), Speech.Callback {
         val modeText = if (prefs.isPostProcessing) "Mode: Post-Processing" else "Mode: Real-Time"
         m.menu.add(0, 5, 4, "Switch Whisper ($modeText)")
         m.menu.add(0, 6, 5, R.string.web_settings)
-
         m.setOnMenuItemClickListener {
             when (it.itemId) {
                 1 -> loadService()
@@ -344,12 +334,10 @@ class WebActivity : Activity(), Speech.Callback {
             cacheMode = WebSettings.LOAD_DEFAULT
             userAgentString = modUserAgent()
         }
-
         CookieManager.getInstance().apply {
             setAcceptCookie(true)
             setAcceptThirdPartyCookies(web, true)
         }
-
         web.setDownloadListener { url, _, _, _, _ ->
             if (url.startsWith("http")) openExternal(Uri.parse(url))
             else Toast.makeText(this, R.string.web_no_downloads, Toast.LENGTH_SHORT).show()
@@ -488,7 +476,6 @@ class WebActivity : Activity(), Speech.Callback {
     private fun handleIntent(i: Intent?, initial: Boolean) {
         service = AiServices.current(prefs)
         updateToolbar()
-
         val mode = i?.getStringExtra(EXTRA_MODE)
         val filePaths = i?.getStringArrayExtra(EXTRA_FILES) ?: emptyArray()
         val stagedList = filePaths.mapNotNull { StagedFiles.fromPath(this, it) }
@@ -505,7 +492,6 @@ class WebActivity : Activity(), Speech.Callback {
             stagedList,
             System.currentTimeMillis()
         )
-
         val needLoad = web.url == null || !isOnService(web.url)
         if (needLoad) {
             loadService()
@@ -531,19 +517,17 @@ class WebActivity : Activity(), Speech.Callback {
         val p = pending ?: return
         pending = null
         if (System.currentTimeMillis() - p.stamp > 90_000) return
+
         val gen = ++generation
         hideStatus()
-
         focusWithRetry(gen, 0) { focused ->
             if (isFinishing || isDestroyed || gen != generation) return@focusWithRetry
             if (!focused) Toast.makeText(this, R.string.web_no_chatbox, Toast.LENGTH_LONG).show()
-
             var delay = 0L
             if (p.files.isNotEmpty() && prefs.autoAttach) {
                 handler.postDelayed({ if (!isFinishing && !isDestroyed && gen == generation) attachFilesViaJs(p.files) }, 350)
                 delay = 1000
             }
-
             if (p.text != null) {
                 handler.postDelayed({
                     if (!isFinishing && !isDestroyed && gen == generation) insertText(p.text)
@@ -614,8 +598,8 @@ class WebActivity : Activity(), Speech.Callback {
                 try {
                     val file = staged.file
                     if (!file.exists() || !file.canRead()) continue
-
                     val bytes: ByteArray
+
                     if (staged.isImage) {
                         // Always safely decode and scale to max 1280px and compressed JPEG (< 300KB)
                         // to prevent Android Binder TransactionTooLargeException & Chromium IPC crash
@@ -682,30 +666,29 @@ class WebActivity : Activity(), Speech.Callback {
 
     override fun onStarting(engineName: String) {
         if (prefs.isLocalModelMode && prefs.isPostProcessing) {
-            showStatus("● RECORDING AUDIO — Speak now... [Tap mic to transcribe]")
+            showStatus("● RECORDING AUDIO • Speak now... [Tap mic to transcribe]")
         } else if (prefs.isLocalModelMode) {
             showStatus("● LIVE MIC ACTIVE ($engineName)... [Tap mic to stop]")
         } else {
-            showStatus("● LIVE MIC ACTIVE — Connecting to $engineName... [Tap mic to stop]")
+            showStatus("● LIVE MIC ACTIVE • Connecting to $engineName... [Tap mic to stop]")
         }
     }
 
     override fun onReadyForSpeech(engineName: String) {
         if (prefs.isLocalModelMode && prefs.isPostProcessing) {
-            showStatus("● RECORDING AUDIO — Speak now! [Tap mic to stop & transcribe]")
+            showStatus("● RECORDING AUDIO • Speak now! [Tap mic to stop & transcribe]")
         } else {
-            showStatus("● LIVE MIC ACTIVE ($engineName) — Listening... Speak now [Tap mic to stop]")
+            showStatus("● LIVE MIC ACTIVE ($engineName) • Listening... Speak now [Tap mic to stop]")
         }
     }
 
     override fun onPartial(text: String) {
-        showStatus("● LIVE MIC (${speech.currentEngineName}) — Heard: \"$text\"")
+        showStatus("● LIVE MIC (${speech.currentEngineName}) • Heard: \"$text\"")
     }
 
     override fun onFinal(text: String) {
         showStatus("Transcribed: \"$text\"")
         handler.postDelayed({ hideStatus() }, 1200)
-
         val submit = submitAfterVoice || prefs.autoSubmit
         submitAfterVoice = false
         val gen = ++generation
@@ -774,7 +757,7 @@ class WebActivity : Activity(), Speech.Callback {
     override fun onStateChanged(listening: Boolean, engineName: String) {
         micBtn.imageTintList = ColorStateList.valueOf(if (listening) Color.parseColor("#EF4444") else Ui.TEXT)
         if (listening) {
-            showStatus("● LIVE MIC ACTIVE ($engineName) — Listening... Speak now [Tap mic to stop]")
+            showStatus("● LIVE MIC ACTIVE ($engineName) • Listening... Speak now [Tap mic to stop]")
         } else {
             handler.postDelayed({ if (!speech.listening) hideStatus() }, 500)
         }
@@ -857,7 +840,6 @@ class WebActivity : Activity(), Speech.Callback {
 }
 
 private object WebJs {
-
     private const val FIND_INPUT = """
         function findInput() {
           var sels = ['rich-textarea .ql-editor', 'div[contenteditable="true"][role="textbox"]',
@@ -888,10 +870,22 @@ private object WebJs {
           el.focus();
           if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
             var proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
-            Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, (el.value ? el.value + ' ' : '') + t);
+            var cur = el.value || '';
+            var next = (cur.trim().length > 0 ? cur.trimEnd() + ' ' : '') + t;
+            Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, next);
             el.dispatchEvent(new Event('input', {bubbles: true}));
           } else {
-            document.execCommand('insertText', false, t);
+            var sel = window.getSelection();
+            if (sel) {
+              var range = document.createRange();
+              range.selectNodeContents(el);
+              range.collapse(false);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+            var curText = (el.innerText || el.textContent || '').trim();
+            var prefix = (curText.length > 0 ? ' ' : '');
+            document.execCommand('insertText', false, prefix + t);
           }
           return true;
         })($quoted)
