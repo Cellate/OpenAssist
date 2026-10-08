@@ -8,6 +8,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -55,13 +56,11 @@ class OverlayActivity : Activity(), Speech.Callback {
     private lateinit var root: FrameLayout
     private lateinit var selection: SelectionView
     private lateinit var hint: TextView
-
     private lateinit var topBar: LinearLayout
     private lateinit var copyBtn: TextView
     private lateinit var wholeBtn: TextView
     private lateinit var modeBtn: TextView
     private lateinit var fitBtn: TextView
-
     private lateinit var panel: LinearLayout
     private lateinit var attachRow: LinearLayout
     private lateinit var thumb: ImageView
@@ -70,8 +69,14 @@ class OverlayActivity : Activity(), Speech.Callback {
     private lateinit var langBtn: TextView
     private lateinit var engineBtn: TextView
     private lateinit var input: OaEditText
+    private lateinit var attachBtn: ImageButton
+    private lateinit var pasteBtn: ImageButton
     private lateinit var micBtn: ImageButton
     private lateinit var sendBtn: ImageButton
+
+    // In-Pill Audio Wave Visualizer (Google Gemini style)
+    private lateinit var searchVisualizerContainer: LinearLayout
+    private val searchWaveBars = ArrayList<View>()
 
     // Clear Privacy Listening Card
     private lateinit var listeningCard: LinearLayout
@@ -82,7 +87,6 @@ class OverlayActivity : Activity(), Speech.Callback {
     private val waveBars = ArrayList<View>()
     private lateinit var listeningStopBtn: TextView
     private lateinit var listeningCancelBtn: TextView
-
     private var dotAnimator: ObjectAnimator? = null
     private var micPulseAnimator: ObjectAnimator? = null
 
@@ -92,6 +96,10 @@ class OverlayActivity : Activity(), Speech.Callback {
     private var selGen = 0
     private var listening = false
     private var keepAlive = false
+    private var basePromptBeforeSpeech = ""
+    private var currentCutoutLeft = 0
+    private var currentCutoutRight = 0
+    private var currentBottomInset = 0
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -130,6 +138,7 @@ class OverlayActivity : Activity(), Speech.Callback {
     }
 
     private fun dp(v: Int) = Ui.dp(this, v)
+
     private fun allFiles(): List<Staged> = listOfNotNull(selectionFile) + extras
 
     @Suppress("DEPRECATION")
@@ -175,7 +184,6 @@ class OverlayActivity : Activity(), Speech.Callback {
         modeBtn = Ui.chip(this, getString(R.string.mode_circle), false) { toggleMode() }
         fitBtn = Ui.chip(this, getString(R.string.btn_fit), false) { selection.resetView() }
         val close = Ui.iconButton(this, R.drawable.ic_close, getString(R.string.cd_close), bg = Ui.SURFACE_HI) { finish() }
-
         topBar.addView(copyBtn)
         topBar.addView(space(6))
         topBar.addView(wholeBtn)
@@ -185,7 +193,6 @@ class OverlayActivity : Activity(), Speech.Callback {
         topBar.addView(fitBtn)
         topBar.addView(space(6))
         topBar.addView(close)
-
         root.addView(
             topBar,
             FrameLayout.LayoutParams(
@@ -215,7 +222,6 @@ class OverlayActivity : Activity(), Speech.Callback {
             }
         }
         attachRow.addView(thumb, LinearLayout.LayoutParams(dp(48), dp(48)))
-
         attachLabel = TextView(this).apply {
             setTextColor(Ui.TEXT)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
@@ -223,7 +229,6 @@ class OverlayActivity : Activity(), Speech.Callback {
             setPadding(dp(12), 0, dp(12), 0)
         }
         attachRow.addView(attachLabel, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-
         attachRow.addView(
             Ui.iconButton(this, R.drawable.ic_close, getString(R.string.cd_remove), sizeDp = 36) {
                 selGen++
@@ -239,13 +244,14 @@ class OverlayActivity : Activity(), Speech.Callback {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
-        toolsRow.addView(Ui.iconButton(this, R.drawable.ic_attach, getString(R.string.cd_attach), bg = Ui.SURFACE_HI) { pickFiles() })
+        pasteBtn = Ui.iconButton(this, R.drawable.ic_paste, getString(R.string.cd_paste), bg = Ui.SURFACE_HI, sizeDp = 36) { pasteClip() }
+        toolsRow.addView(pasteBtn)
         toolsRow.addView(space(6))
-        toolsRow.addView(Ui.iconButton(this, R.drawable.ic_paste, getString(R.string.cd_paste), bg = Ui.SURFACE_HI) { pasteClip() })
-        toolsRow.addView(space(8))
+
         langBtn = Ui.chip(this, "", false) { cycleLang() }
         toolsRow.addView(langBtn)
         toolsRow.addView(space(6))
+
         engineBtn = Ui.chip(this, "", false) { toggleEngineMethod() }.apply {
             setOnLongClickListener {
                 showEngineMenu()
@@ -297,6 +303,7 @@ class OverlayActivity : Activity(), Speech.Callback {
             text = "Google Speech Services"
         }
         listenHeader.addView(listeningEngineChip)
+
         listenHeader.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
 
         // Privacy indicator icon & text
@@ -375,14 +382,28 @@ class OverlayActivity : Activity(), Speech.Callback {
         }
         listenActions.addView(listeningStopBtn)
         listeningCard.addView(listenActions)
+
         panel.addView(listeningCard, lp(bottom = 8))
 
-        // Main Prompt Input Row - Spacious, clean, and professional
+        // Main Prompt Input Row - Spacious, clean, and professional Google Gemini Material theme
         val pillRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            background = Ui.rounded(Ui.PANEL, dp(30).toFloat())
-            setPadding(dp(14), dp(4), dp(6), dp(4))
+            background = Ui.rounded(Ui.SURFACE, dp(30).toFloat())
+            setPadding(dp(8), dp(4), dp(8), dp(4))
+        }
+
+        // Attachment '+' button located directly to the left of the search text field, just like Gemini
+        attachBtn = Ui.iconButton(
+            this, R.drawable.ic_add, getString(R.string.cd_attach),
+            tint = Ui.TEXT, bg = Ui.SURFACE_HI, sizeDp = 38
+        ) { pickFiles() }
+        pillRow.addView(attachBtn)
+        pillRow.addView(space(6))
+
+        // Center search container holding the text field and in-pill wave visualizer
+        val searchCenter = FrameLayout(this).apply {
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         }
 
         input = OaEditText(this).apply {
@@ -390,13 +411,14 @@ class OverlayActivity : Activity(), Speech.Callback {
             background = null
             setTextColor(Ui.TEXT)
             setHintTextColor(Ui.MUTED)
-            hint = "Type or speak your question here..."
+            updateInputHint()
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-            imeOptions = EditorInfo.IME_ACTION_SEND
+            // IME_FLAG_NO_EXTRACT_UI prevents fullscreen/centered extracted editor in landscape!
+            imeOptions = EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_EXTRACT_UI
             setHorizontallyScrolling(false)
             maxLines = 4
-            setPadding(dp(2), dp(8), dp(8), dp(8))
+            setPadding(dp(4), dp(8), dp(4), dp(8))
             addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -411,7 +433,44 @@ class OverlayActivity : Activity(), Speech.Callback {
                 }
             }
         }
-        micBtn = Ui.iconButton(this, R.drawable.ic_mic, getString(R.string.cd_mic), bg = Ui.SURFACE_HI) { toggleMic() }.apply {
+        searchCenter.addView(
+            input,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER_VERTICAL
+            )
+        )
+
+        // In-pill Gemini waveform visualizer
+        searchVisualizerContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            visibility = View.GONE
+            setPadding(dp(4), 0, dp(4), 0)
+        }
+        searchWaveBars.clear()
+        val geminiColors = intArrayOf(Ui.GEMINI_BLUE, Ui.GEMINI_RED, Ui.GEMINI_YELLOW, Ui.GEMINI_GREEN, Ui.ACCENT)
+        for (i in 0 until 5) {
+            val bar = View(this).apply {
+                background = Ui.rounded(geminiColors[i % geminiColors.size], dp(3).toFloat())
+            }
+            searchWaveBars.add(bar)
+            searchVisualizerContainer.addView(bar, LinearLayout.LayoutParams(dp(4), dp(12)).apply {
+                leftMargin = dp(3)
+                rightMargin = dp(3)
+            })
+        }
+        searchCenter.addView(
+            searchVisualizerContainer,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.END or Gravity.CENTER_VERTICAL
+            ).apply { rightMargin = dp(6) }
+        )
+
+        pillRow.addView(searchCenter)
+        pillRow.addView(space(6))
+
+        micBtn = Ui.iconButton(this, R.drawable.ic_mic, getString(R.string.cd_mic), bg = Ui.SURFACE_HI, sizeDp = 38) { toggleMic() }.apply {
             setOnLongClickListener {
                 toggleEngineMethod()
                 true
@@ -419,12 +478,10 @@ class OverlayActivity : Activity(), Speech.Callback {
         }
         sendBtn = Ui.iconButton(
             this, R.drawable.ic_send, getString(R.string.cd_send),
-            tint = Ui.ON_ACCENT, bg = Ui.ACCENT
+            tint = Ui.ON_ACCENT, bg = Ui.ACCENT, sizeDp = 38
         ) { send() }
         sendBtn.visibility = View.GONE
 
-        pillRow.addView(input, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        pillRow.addView(space(4))
         pillRow.addView(micBtn)
         pillRow.addView(space(6))
         pillRow.addView(sendBtn)
@@ -443,22 +500,69 @@ class OverlayActivity : Activity(), Speech.Callback {
             if (Build.VERSION.SDK_INT >= 30) {
                 val bars = insets.getInsets(WindowInsets.Type.systemBars())
                 val ime = insets.getInsets(WindowInsets.Type.ime())
-                top = bars.top
-                bottom = max(bars.bottom, ime.bottom)
+                val cutout = insets.getInsets(WindowInsets.Type.displayCutout())
+                top = maxOf(bars.top, cutout.top)
+                bottom = maxOf(bars.bottom, ime.bottom, cutout.bottom)
+                currentCutoutLeft = cutout.left
+                currentCutoutRight = cutout.right
             } else {
                 top = insets.systemWindowInsetTop
                 bottom = insets.systemWindowInsetBottom
+                if (Build.VERSION.SDK_INT >= 28) {
+                    val dc = insets.displayCutout
+                    currentCutoutLeft = dc?.safeInsetLeft ?: 0
+                    currentCutoutRight = dc?.safeInsetRight ?: 0
+                }
             }
+            currentBottomInset = bottom
             topBar.setPadding(dp(8), top + dp(8), dp(8), 0)
             (hint.layoutParams as FrameLayout.LayoutParams).topMargin = top + dp(64)
             hint.requestLayout()
-            panel.setPadding(dp(12), 0, dp(12), bottom + dp(12))
+
+            updatePanelLayout()
             insets
         }
 
         refreshChips()
         refreshLang()
         refreshEngineChip()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updatePanelLayout()
+    }
+
+    private fun updatePanelLayout() {
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val dm = resources.displayMetrics
+        val screenWidth = dm.widthPixels
+
+        val lp = (panel.layoutParams as? FrameLayout.LayoutParams) ?: FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        if (isLandscape) {
+            // In landscape: limit max size to 460dp (or 55% of screen width), and anchor to the right
+            val maxAllowedWidth = minOf(dp(460), (screenWidth * 0.55f).toInt())
+            lp.width = maxAllowedWidth
+            lp.gravity = Gravity.BOTTOM or Gravity.END
+
+            // Safe margin from right edge to stay comfortably away from the camera cutout and phone edge
+            val safeEndMargin = maxOf(dp(24), currentCutoutRight + dp(16))
+            val safeBottomMargin = currentBottomInset + dp(12)
+            lp.setMargins(dp(16), 0, safeEndMargin, safeBottomMargin)
+        } else {
+            lp.width = ViewGroup.LayoutParams.MATCH_PARENT
+            lp.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+
+            val safeStartMargin = maxOf(dp(12), currentCutoutLeft + dp(8))
+            val safeEndMargin = maxOf(dp(12), currentCutoutRight + dp(8))
+            val safeBottomMargin = currentBottomInset + dp(12)
+            lp.setMargins(safeStartMargin, 0, safeEndMargin, safeBottomMargin)
+        }
+        panel.layoutParams = lp
+        panel.requestLayout()
     }
 
     private fun lp(bottom: Int): LinearLayout.LayoutParams =
@@ -507,7 +611,8 @@ class OverlayActivity : Activity(), Speech.Callback {
     }
 
     private fun updateInputHint() {
-        input.hint = "Type or speak your question here..."
+        val currentService = AiServices.current(prefs)
+        input.hint = getString(R.string.ask_hint, currentService.name)
     }
 
     private fun refreshChips() {
@@ -539,6 +644,7 @@ class OverlayActivity : Activity(), Speech.Callback {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { rightMargin = dp(8) })
         }
+
         val addChip = Ui.chip(this, "+ Add AI", false) {
             showAddCustomAiDialog()
         }
@@ -638,7 +744,7 @@ class OverlayActivity : Activity(), Speech.Callback {
 
         // 3. Cycle local models if in local mode and multiple loaded
         if (models.size > 1) {
-            options.add("↻ Cycle to Next Model (${models.size} loaded)")
+            options.add("⟳ Cycle to Next Model (${models.size} loaded)")
             actions.add {
                 val next = store.cycleModel()
                 prefs.recognizer = Prefs.ENGINE_LOCAL_MODEL
@@ -886,6 +992,7 @@ class OverlayActivity : Activity(), Speech.Callback {
             speech.stop()
             return
         }
+        basePromptBeforeSpeech = input.text.toString().trim()
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             keepAlive = true
             requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), RC_MIC)
@@ -935,26 +1042,32 @@ class OverlayActivity : Activity(), Speech.Callback {
         listeningTitle.text = "● LIVE MIC ACTIVE"
         listeningEngineChip.text = engineName
         listeningPreviewText.text = statusText
-        // Animate mic button in bottom pill with red active glow
-        micBtn.background = Ui.pill(this, Color.parseColor("#EF4444"))
+
+        // Animate mic button in bottom pill with active red / coral glow
+        micBtn.background = Ui.pill(this, Ui.GEMINI_RED)
         micBtn.imageTintList = ColorStateList.valueOf(Color.WHITE)
+        searchVisualizerContainer.visibility = View.VISIBLE
+
         startDotPulse()
     }
 
     override fun onPartial(text: String) {
-        input.setText(text)
+        val combined = if (basePromptBeforeSpeech.isNotEmpty()) "$basePromptBeforeSpeech $text" else text
+        input.setText(combined)
         input.setSelection(input.text.length)
         updateSendVisibility()
         listeningPreviewText.text = "Heard: \"$text\""
     }
 
     override fun onFinal(text: String) {
+        val combined = if (basePromptBeforeSpeech.isNotEmpty()) "$basePromptBeforeSpeech $text" else text
         listeningPreviewText.text = "Received: \"$text\""
-        input.setText(text)
+        input.setText(combined)
         input.setSelection(input.text.length)
+        basePromptBeforeSpeech = combined
         updateSendVisibility()
         onStateChanged(false, speech.currentEngineName)
-        if (text.isNotBlank() && prefs.autoSubmit) send()
+        if (combined.isNotBlank() && prefs.autoSubmit) send()
     }
 
     override fun onRmsChanged(rmsdB: Float) {
@@ -966,6 +1079,14 @@ class OverlayActivity : Activity(), Speech.Callback {
             val lp = waveBars[i].layoutParams
             lp.height = dp(heightDp)
             waveBars[i].layoutParams = lp
+        }
+        // Animate visualizer inside the search input pill
+        for (i in searchWaveBars.indices) {
+            val variance = (1f + kotlin.math.sin(i.toDouble() * 1.5 + System.currentTimeMillis() / 50.0) * 0.6).toFloat()
+            val heightDp = (6 + normalized * 18 * variance).toInt().coerceIn(4, 22)
+            val lp = searchWaveBars[i].layoutParams
+            lp.height = dp(heightDp)
+            searchWaveBars[i].layoutParams = lp
         }
     }
 
@@ -1015,10 +1136,11 @@ class OverlayActivity : Activity(), Speech.Callback {
 
     override fun onStateChanged(listening: Boolean, engineName: String) {
         this.listening = listening
-        micBtn.background = Ui.pill(this, if (listening) Color.parseColor("#EF4444") else Ui.SURFACE_HI)
+        micBtn.background = Ui.pill(this, if (listening) Ui.GEMINI_RED else Ui.SURFACE_HI)
         micBtn.imageTintList = ColorStateList.valueOf(
             if (listening) Color.WHITE else Ui.TEXT
         )
+        searchVisualizerContainer.visibility = if (listening) View.VISIBLE else View.GONE
         if (listening) {
             showListeningCard(engineName, "Listening... Speak now")
             input.hint = "Listening via $engineName..."
@@ -1048,6 +1170,11 @@ class OverlayActivity : Activity(), Speech.Callback {
 
     private fun resetWaveBars() {
         for (b in waveBars) {
+            val lp = b.layoutParams
+            lp.height = dp(6)
+            b.layoutParams = lp
+        }
+        for (b in searchWaveBars) {
             val lp = b.layoutParams
             lp.height = dp(6)
             b.layoutParams = lp
