@@ -12,16 +12,23 @@ import android.widget.LinearLayout
 import android.widget.TextView
 
 object Ui {
+    // Material You / Gemini Material 3 Dark Palette
+    val PANEL: Int = Color.parseColor("#F01F2023")       // Gemini M3 surface container with gentle opacity
+    val SURFACE: Int = Color.parseColor("#FF282A2C")     // Gemini pill / container background
+    val SURFACE_HI: Int = Color.parseColor("#FF37393E")  // Elevated container / button surface
+    val ACCENT: Int = Color.parseColor("#8AB4F8")        // Gemini light blue accent
+    val ON_ACCENT: Int = Color.parseColor("#041E49")     // High-contrast deep navy on accent
+    val TEXT: Int = Color.parseColor("#FFE3E3E3")        // Material You primary light text
+    val MUTED: Int = Color.parseColor("#FF9AA0A6")       // Material You secondary muted text
+    val BG: Int = Color.parseColor("#FF131314")          // Gemini dark surface container
+    val BAR: Int = Color.parseColor("#FF1E1F20")         // Tonal navigation bar
+    val DRAG_HANDLE: Int = Color.parseColor("#559AA0A6") // Pill drag handle indicator
 
-    val PANEL: Int = Color.parseColor("#F2202124")
-    val SURFACE: Int = Color.parseColor("#FF303134")
-    val SURFACE_HI: Int = Color.parseColor("#FF3C4043")
-    val ACCENT: Int = Color.parseColor("#FF8AB4F8")
-    val ON_ACCENT: Int = Color.parseColor("#FF0B1B3D")
-    val TEXT: Int = Color.parseColor("#FFE8EAED")
-    val MUTED: Int = Color.parseColor("#FF9AA0A6")
-    val BG: Int = Color.parseColor("#FF121212")
-    val BAR: Int = Color.parseColor("#FF202124")
+    // Gemini signature 4-color wave visualizer palette
+    val GEMINI_BLUE: Int = Color.parseColor("#4285F4")
+    val GEMINI_RED: Int = Color.parseColor("#EA4335")
+    val GEMINI_YELLOW: Int = Color.parseColor("#FBBC05")
+    val GEMINI_GREEN: Int = Color.parseColor("#34A853")
 
     fun dp(ctx: Context, v: Float): Int =
         (v * ctx.resources.displayMetrics.density + 0.5f).toInt()
