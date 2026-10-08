@@ -93,13 +93,16 @@ class WebActivity : Activity(), Speech.Callback {
     private var webPermission: PermissionRequest? = null
     private var submitAfterVoice = false
     private var loadFailed = false
+    private lateinit var theme: Ui.Theme
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Prefs(this)
+        theme = Ui.theme(this)
         speech = Speech(this, prefs, this)
-        window.statusBarColor = Ui.BAR
-        window.navigationBarColor = Ui.BAR
+        window.statusBarColor = theme.BAR
+        window.navigationBarColor = theme.BAR
+        Ui.applySystemBars(this, theme)
 
         buildUi()
         configureWebView()
@@ -122,46 +125,46 @@ class WebActivity : Activity(), Speech.Callback {
     private fun buildUi() {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Ui.BG)
+            setBackgroundColor(theme.BG)
         }
 
         val bar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setBackgroundColor(Ui.BAR)
+            setBackgroundColor(theme.BAR)
             setPadding(dp(8), 0, dp(4), 0)
         }
         serviceBtn = TextView(this).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
-            setTextColor(Ui.TEXT)
-            background = Ui.pill(this@WebActivity, Ui.SURFACE_HI)
+            setTextColor(theme.TEXT)
+            background = Ui.pill(this@WebActivity, theme.SURFACE_HI)
             setPadding(dp(14), dp(7), dp(14), dp(7))
             setOnClickListener { chooseService() }
         }
         bar.addView(serviceBtn)
         bar.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
-        langBtn = Ui.chip(this, "", false) { cycleLang() }
+        langBtn = Ui.chip(this, "", false, theme) { cycleLang() }
         bar.addView(langBtn)
         val sp = View(this).apply { layoutParams = LinearLayout.LayoutParams(dp(4), 1) }
         bar.addView(sp)
-        engineBtn = Ui.chip(this, "", false) { toggleEngineMethod() }
+        engineBtn = Ui.chip(this, "", false, theme) { toggleEngineMethod() }
         bar.addView(engineBtn)
-        micBtn = Ui.iconButton(this, R.drawable.ic_mic, getString(R.string.cd_mic)) { toggleVoice(false) }
+        micBtn = Ui.iconButton(this, R.drawable.ic_mic, getString(R.string.cd_mic), theme = theme) { toggleVoice(false) }
         bar.addView(micBtn)
-        bar.addView(Ui.iconButton(this, R.drawable.ic_paste, getString(R.string.web_paste)) { pasteNow() })
-        val menu = Ui.iconButton(this, R.drawable.ic_settings, getString(R.string.web_settings)) {}
+        bar.addView(Ui.iconButton(this, R.drawable.ic_paste, getString(R.string.web_paste), theme = theme) { pasteNow() })
+        val menu = Ui.iconButton(this, R.drawable.ic_settings, getString(R.string.web_settings), theme = theme) {}
         menu.setOnClickListener { showMenu(menu) }
         bar.addView(menu)
 
         progress = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
             max = 100
             visibility = View.GONE
-            progressTintList = ColorStateList.valueOf(Ui.ACCENT)
+            progressTintList = ColorStateList.valueOf(theme.ACCENT)
         }
         status = TextView(this).apply {
             visibility = View.GONE
-            setTextColor(Ui.TEXT)
-            setBackgroundColor(Ui.SURFACE)
+            setTextColor(theme.TEXT)
+            setBackgroundColor(theme.SURFACE)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             setPadding(dp(14), dp(8), dp(14), dp(8))
         }
@@ -185,8 +188,8 @@ class WebActivity : Activity(), Speech.Callback {
         langBtn.text = prefs.voiceLang.chip
         engineBtn.text = prefs.getEngineChipLabel()
         val isFuto = prefs.isFutoActive()
-        engineBtn.background = Ui.pill(this, if (isFuto) Ui.ACCENT else Ui.SURFACE_HI)
-        engineBtn.setTextColor(if (isFuto) Ui.ON_ACCENT else Ui.TEXT)
+        engineBtn.background = Ui.pill(this, if (isFuto) theme.ACCENT else theme.SURFACE_HI)
+        engineBtn.setTextColor(if (isFuto) theme.ON_ACCENT else theme.TEXT)
     }
 
     private fun toggleEngineMethod() {
