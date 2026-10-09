@@ -133,11 +133,23 @@ class OverlayActivity : Activity(), Speech.Callback {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if (::theme.isInitialized && theme.isDark != prefs.isDarkMode) {
+            recreate()
+            return
+        }
         selGen++
         selectionFile = null
         extras.clear()
         input.setText("")
         applyState()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::theme.isInitialized && theme.isDark != prefs.isDarkMode) {
+            recreate()
+            return
+        }
     }
 
     private fun dp(v: Int) = Ui.dp(this, v)
