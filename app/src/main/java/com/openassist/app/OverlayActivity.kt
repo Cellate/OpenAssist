@@ -949,6 +949,9 @@ class OverlayActivity : Activity(), Speech.Callback {
                     input.hint = "Transcribing with Whisper..."
                 }
             }
+            if (::input.isInitialized) {
+                basePromptBeforeSpeech = input.text.toString().trim()
+            }
             speech.stop()
             return
         }
@@ -977,28 +980,26 @@ class OverlayActivity : Activity(), Speech.Callback {
 
     override fun onStarting(engineName: String) {
         listening = true
+        if (::input.isInitialized) {
+            basePromptBeforeSpeech = input.text.toString().trim()
+        }
         onStateChanged(true, engineName)
     }
 
     override fun onReadyForSpeech(engineName: String) {
         listening = true
+        if (::input.isInitialized && basePromptBeforeSpeech.isEmpty()) {
+            basePromptBeforeSpeech = input.text.toString().trim()
+        }
         onStateChanged(true, engineName)
     }
 
     override fun onPartial(text: String) {
         if (!::input.isInitialized) return
-        val current = input.text.toString().trim()
         val out = text.trim()
         if (out.isNotEmpty()) {
-            val combined = when {
-                current.isEmpty() -> out
-                current.contains(out) -> current
-                basePromptBeforeSpeech.isNotEmpty() && current.startsWith(basePromptBeforeSpeech) -> {
-                    val userTyped = current.removePrefix(basePromptBeforeSpeech).trim()
-                    if (userTyped.isNotEmpty()) "$basePromptBeforeSpeech $userTyped $out" else "$basePromptBeforeSpeech $out"
-                }
-                else -> "$current $out"
-            }
+            val prefix = basePromptBeforeSpeech.trim()
+            val combined = if (prefix.isEmpty()) out else "$prefix $out"
             input.setText(combined)
             input.setSelection(combined.length)
             updateSendVisibility()
@@ -1007,35 +1008,19 @@ class OverlayActivity : Activity(), Speech.Callback {
 
     override fun onFinal(text: String) {
         if (!::input.isInitialized) return
-        val current = input.text.toString().trim()
         val out = text.trim()
         if (out.isEmpty()) {
             onStateChanged(false, speech.currentEngineName)
             return
         }
-        val combined = when {
-            current.isEmpty() -> out
-            current == out || current.endsWith(out) || current.contains(out) -> current
-            basePromptBeforeSpeech.isNotEmpty() && current.startsWith(basePromptBeforeSpeech) -> {
-                val userTyped = current.removePrefix(basePromptBeforeSpeech).trim()
-                if (userTyped.isNotEmpty() && !userTyped.endsWith(out)) {
-                    "$basePromptBeforeSpeech $userTyped $out"
-                } else if (userTyped.isNotEmpty()) {
-                    current
-                } else {
-                    "$basePromptBeforeSpeech $out"
-                }
-            }
-            else -> "$current $out"
-        }
+        val prefix = basePromptBeforeSpeech.trim()
+        val combined = if (prefix.isEmpty()) out else "$prefix $out"
         input.setText(combined)
         input.setSelection(combined.length)
         basePromptBeforeSpeech = combined
         updateSendVisibility()
         onStateChanged(false, speech.currentEngineName)
-        // If the user is actively typing in the input box, do not interrupt them with premature autoSubmit
-        val userIsActivelyTyping = input.hasFocus() && current != basePromptBeforeSpeech
-        if (combined.isNotBlank() && prefs.autoSubmit && !userIsActivelyTyping) send()
+        if (combined.isNotBlank() && prefs.autoSubmit) send()
     }
 
     override fun onRmsChanged(rmsdB: Float) {
@@ -1087,6 +1072,7 @@ class OverlayActivity : Activity(), Speech.Callback {
     override fun onError(message: String) {
         onStateChanged(false, speech.currentEngineName)
         if (::input.isInitialized) {
+            basePromptBeforeSpeech = input.text.toString().trim()
             val originalHint = input.hint
             input.hint = message
             input.postDelayed({
