@@ -132,11 +132,11 @@ class Prefs(private val context: Context) {
         set(v) { sp.edit().putBoolean("auto_attach", v).apply() }
 
     var autoSubmit: Boolean
-        get() = sp.getBoolean("auto_submit", true)
+        get() = sp.getBoolean("auto_submit", false)
         set(v) { sp.edit().putBoolean("auto_submit", v).apply() }
 
     var composeAfterCircle: Boolean
-        get() = sp.getBoolean("compose_after_circle", false)
+        get() = sp.getBoolean("compose_after_circle", true)
         set(v) { sp.edit().putBoolean("compose_after_circle", v).apply() }
 
     var autoStartMic: Boolean
