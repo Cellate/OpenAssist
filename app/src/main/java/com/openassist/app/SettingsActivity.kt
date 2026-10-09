@@ -1364,18 +1364,10 @@ class SettingsActivity : Activity() {
             }
 
             override fun onPartial(text: String) {
-                val current = testTextBox.text.toString().trim()
                 val out = text.trim()
                 if (out.isNotEmpty()) {
-                    val combined = when {
-                        current.isEmpty() -> out
-                        current.contains(out) -> current
-                        baseTestTextBeforeSpeech.isNotEmpty() && current.startsWith(baseTestTextBeforeSpeech) -> {
-                            val userTyped = current.removePrefix(baseTestTextBeforeSpeech).trim()
-                            if (userTyped.isNotEmpty()) "$baseTestTextBeforeSpeech $userTyped $out" else "$baseTestTextBeforeSpeech $out"
-                        }
-                        else -> "$current $out"
-                    }
+                    val prefix = baseTestTextBeforeSpeech.trim()
+                    val combined = if (prefix.isEmpty()) out else "$prefix $out"
                     testTextBox.setText(combined)
                     testTextBox.setSelection(combined.length)
                 }
@@ -1383,23 +1375,9 @@ class SettingsActivity : Activity() {
 
             override fun onFinal(text: String) {
                 isTranscribing = false
-                val current = testTextBox.text.toString().trim()
                 val out = text.trim()
-                val combined = when {
-                    current.isEmpty() -> out
-                    current == out || current.endsWith(out) || current.contains(out) -> current
-                    baseTestTextBeforeSpeech.isNotEmpty() && current.startsWith(baseTestTextBeforeSpeech) -> {
-                        val userTyped = current.removePrefix(baseTestTextBeforeSpeech).trim()
-                        if (userTyped.isNotEmpty() && !userTyped.endsWith(out)) {
-                            "$baseTestTextBeforeSpeech $userTyped $out"
-                        } else if (userTyped.isNotEmpty()) {
-                            current
-                        } else {
-                            "$baseTestTextBeforeSpeech $out"
-                        }
-                    }
-                    else -> "$current $out"
-                }
+                val prefix = baseTestTextBeforeSpeech.trim()
+                val combined = if (out.isEmpty()) prefix else if (prefix.isEmpty()) out else "$prefix $out"
                 testTextBox.setText(combined)
                 testTextBox.setSelection(combined.length)
                 baseTestTextBeforeSpeech = combined
