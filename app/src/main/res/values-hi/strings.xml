@@ -5,7 +5,7 @@
 
     <!-- Overlay -->
     <string name="hint_circle">स्क्रीन पर किसी भी हिस्से को चुनें</string>
-    <string name="hint_no_screenshot">स्क्रीनशॉट नहीं मिला। 'Use screenshot' चालू करें</string>
+    <string name="hint_no_screenshot">स्क्रीनशॉट नहीं मिला। “Use screenshot” चालू करें</string>
     <string name="ask_hint">%1$s से पूछें</string>
     <string name="btn_copy">कॉपी</string>
     <string name="btn_whole">पूरी स्क्रीन</string>
@@ -51,7 +51,7 @@
     <string name="st_assistant_on">सक्रिय। होम बटन दबाकर रखें।</string>
     <string name="st_assistant_off">डिफ़ॉल्ट असिस्टेंट नहीं चुना गया</string>
     <string name="st_set_assistant">डिफ़ॉल्ट असिस्टेंट चुनें</string>
-    <string name="st_screenshot_tip">वहां OpenAssist चुनें और 'Use screenshot' चालू करें</string>
+    <string name="st_screenshot_tip">वहां OpenAssist चुनें और “Use screenshot” चालू करें</string>
     <string name="st_default_ai">डिफ़ॉल्ट AI</string>
     <string name="st_custom_url">कस्टम URL</string>
     <string name="st_custom_url_hint">https://your-ai.example/chat</string>
