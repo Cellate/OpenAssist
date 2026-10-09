@@ -124,6 +124,10 @@ class WebActivity : Activity(), Speech.Callback {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if (::theme.isInitialized && theme.isDark != prefs.isDarkMode) {
+            recreate()
+            return
+        }
         handleIntent(intent, initial = false)
     }
 
@@ -309,7 +313,9 @@ class WebActivity : Activity(), Speech.Callback {
         m.menu.add(0, 4, 3, "Switch Engine (${prefs.getEngineChipLabel()})")
         val modeText = if (prefs.isPostProcessing) "Mode: Post-Processing" else "Mode: Real-Time"
         m.menu.add(0, 5, 4, "Switch Whisper ($modeText)")
-        m.menu.add(0, 6, 5, R.string.web_settings)
+        val themeLabel = if (prefs.isDarkMode) "Theme: Dark Mode" else "Theme: Light Mode"
+        m.menu.add(0, 7, 5, "Switch Theme ($themeLabel)")
+        m.menu.add(0, 6, 6, R.string.web_settings)
         m.setOnMenuItemClickListener {
             when (it.itemId) {
                 1 -> loadService()
@@ -322,6 +328,10 @@ class WebActivity : Activity(), Speech.Callback {
                     Toast.makeText(this, "Set Whisper to $updated", Toast.LENGTH_SHORT).show()
                 }
                 6 -> startActivity(Intent(this, SettingsActivity::class.java))
+                7 -> {
+                    prefs.isDarkMode = !prefs.isDarkMode
+                    recreate()
+                }
             }
             true
         }
@@ -338,7 +348,18 @@ class WebActivity : Activity(), Speech.Callback {
 
     @android.annotation.SuppressLint("SetJavaScriptEnabled")
     private fun configureWebView() {
-        web.setBackgroundColor(Ui.BG)
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            try {
+                web.settings.isAlgorithmicDarkeningAllowed = theme.isDark
+            } catch (e: Throwable) {}
+        }
+        @Suppress("DEPRECATION")
+        if (android.os.Build.VERSION.SDK_INT >= 29) {
+            try {
+                web.settings.forceDark = if (theme.isDark) WebSettings.FORCE_DARK_ON else WebSettings.FORCE_DARK_OFF
+            } catch (e: Throwable) {}
+        }
+        web.setBackgroundColor(theme.BG)
         web.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
@@ -836,6 +857,10 @@ class WebActivity : Activity(), Speech.Callback {
 
     override fun onResume() {
         super.onResume()
+        if (::theme.isInitialized && theme.isDark != prefs.isDarkMode) {
+            recreate()
+            return
+        }
         web.onResume()
         updateToolbar()
     }
