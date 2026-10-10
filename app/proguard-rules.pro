@@ -1,0 +1,3 @@
+-keep class com.openassist.app.** { *; }
+-dontwarn com.openassist.app.**
+-keepattributes *Annotation*

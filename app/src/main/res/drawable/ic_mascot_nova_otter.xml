@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+<!-- Nova Otter Body -->
+    <path android:fillColor="#0284C7" android:pathData="M12,3c-5,0 -9,4 -9,9 0,6 4,10 9,10s9,-4 9,-10c0,-5 -4,-9 -9,-9z"/>
+    <!-- Little Ears -->
+    <path android:fillColor="#0369A1" android:pathData="M4.5,8a2,2 0 1,0 0,-0.001zM19.5,8a2,2 0 1,0 0,-0.001z"/>
+    <!-- Belly / Snout -->
+    <path android:fillColor="#E0F2FE" android:pathData="M12,11c-2.5,0 -4,1.5 -4,3.5 0,2 1.5,3.5 4,3.5s4,-1.5 4,-3.5c0,-2 -1.5,-3.5 -4,-3.5z"/>
+    <!-- Eyes -->
+    <path android:fillColor="#0C4A6E" android:pathData="M8.5,10a1.5,1.5 0 1,0 0.001,0zM15.5,10a1.5,1.5 0 1,0 0.001,0z"/>
+    <!-- Nose -->
+    <path android:fillColor="#0C4A6E" android:pathData="M12,13.5a1,1 0 1,0 0.001,0z"/>
+</vector>
