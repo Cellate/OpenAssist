@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+<!-- Lumi Firefly Lantern Body -->
+    <path android:fillColor="#84CC16" android:pathData="M12,4a6,7 0 0,0 -6,7c0,4 3,8 6,8s6,-4 6,-8a6,7 0 0,0 -6,-7z"/>
+    <!-- Translucent Wings -->
+    <path android:fillColor="#BEF264" android:pathData="M12,6C7,2 2,5 4,10c1,2 5,1 8,-4zM12,6c5,-4 10,-1 8,4 -1,2 -5,1 -8,-4z"/>
+    <!-- Glowing Abdomen -->
+    <path android:fillColor="#FACC15" android:pathData="M12,13a4,4 0 0,0 -4,4c0,2.5 1.8,4.5 4,4.5s4,-2 4,-4.5a4,4 0 0,0 -4,-4z"/>
+    <!-- Eyes -->
+    <path android:fillColor="#14532D" android:pathData="M10,8a1,1 0 1,0 0.001,0zM14,8a1,1 0 1,0 0.001,0z"/>
+</vector>

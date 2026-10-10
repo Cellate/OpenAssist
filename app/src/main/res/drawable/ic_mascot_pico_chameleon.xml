@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+<!-- Pico Chameleon Body -->
+    <path android:fillColor="#10B981" android:pathData="M12,3C6.5,3 3,7 3,12c0,5 3.5,9 9,9 4,0 7,-2 8.5,-5L17,15c-1.5,2 -3.5,3 -5,3 -3.5,0 -6,-2.5 -6,-6s2.5,-6 6,-6c3,0 5,2 6,4l2.5,-1C19,6 16,3 12,3z"/>
+    <!-- Big Swirly Eye -->
+    <path android:fillColor="#065F46" android:pathData="M9,9a3,3 0 1,0 0.001,0z"/>
+    <path android:fillColor="#A7F3D0" android:pathData="M9.5,9a1.5,1.5 0 1,0 0.001,0z"/>
+    <path android:fillColor="#064E3B" android:pathData="M9.8,9a0.7,0.7 0 1,0 0.001,0z"/>
+</vector>
