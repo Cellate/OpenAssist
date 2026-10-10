@@ -25,7 +25,7 @@
     <string name="st_auto_attach">Attach circled image automatically</string>
     <string name="st_auto_attach_desc">Pastes the copied selection into the chat box after the page opens.</string>
     <string name="st_auto_submit">Send the question automatically</string>
-    <string name="st_auto_submit_desc">After you type or dictate in the overlay, press the chat's send button for you.</string>
+    <string name="st_auto_submit_desc">After you type or dictate in the overlay, press the chat\'s send button for you.</string>
     <string name="st_circle_compose">Stay in the overlay after circling</string>
     <string name="st_circle_compose_desc">Lets you type or dictate your question right after circling. Off: jump straight to the AI so you can paste and ask there.</string>
     <string name="st_about">About OpenAssist</string>
@@ -51,7 +51,6 @@
     <string name="toast_no_clip">No file or image found on clipboard</string>
     <string name="toast_stage_failed">%1$d files could not be attached</string>
     <string name="toast_stage_failed_generic">Could not attach file</string>
-
     <!-- Mascot & Petting Strings -->
     <string name="pref_mascot_companion_title">Active Mascot Companion</string>
     <string name="pref_mascot_companion_desc">Choose which cute companion assists you on screen</string>
