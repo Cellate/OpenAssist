@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 256 256" width="256" height="256" fill="none" xmlns="http://www.w3.org/2000/svg" class=""><defs><linearGradient id="foxMinBodyDark" x1="40" y1="40" x2="216" y2="216" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FB923C"></stop><stop offset="50%" stop-color="#EA580C"></stop><stop offset="100%" stop-color="#C2410C"></stop></linearGradient><linearGradient id="foxMinBodyLight" x1="40" y1="40" x2="216" y2="216" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F97316"></stop><stop offset="100%" stop-color="#EA580C"></stop></linearGradient></defs><circle cx="128" cy="132" r="92" fill="url(#foxMinBodyDark)"></circle><path d="M 68,88 L 48,38 C 48,38 78,46 96,68 Z" fill="url(#foxMinBodyDark)"></path><path d="M 160,68 C 178,46 208,38 208,38 L 188,88 Z" fill="url(#foxMinBodyDark)"></path><path d="M 60,132
+              C 60,174 90,212 128,212
+              C 166,212 196,174 196,132
+              C 196,112 186,96 172,96
+              C 152,96 140,116 128,116
+              C 116,116 104,96 84,96
+              C 70,96 60,112 60,132 Z" fill="#FFFFFF"></path><circle cx="94" cy="126" r="28" stroke="#38BDF8" stroke-width="7" fill="#0F172A"></circle><circle cx="162" cy="126" r="28" stroke="#38BDF8" stroke-width="7" fill="#0F172A"></circle><rect x="120" y="122" width="16" height="8" rx="4" fill="#38BDF8"></rect><circle cx="102" cy="118" r="8" fill="#FFFFFF"></circle><circle cx="170" cy="118" r="8" fill="#FFFFFF"></circle><circle cx="90" cy="132" r="3.5" fill="#FFFFFF"></circle><circle cx="158" cy="132" r="3.5" fill="#FFFFFF"></circle><ellipse cx="128" cy="148" rx="5" ry="3" fill="#431407"></ellipse><path d="M 120,156 C 124,162 128,162 128,156 C 128,162 132,162 136,156" stroke="#431407" stroke-width="3.5" stroke-linecap="round"></path><path d="M 128,16
+            C 128,24 125,27 122,29
+            C 125,31 128,34 128,42
+            C 128,34 131,31 134,29
+            C 131,27 128,24 128,16 Z" fill="#FBBF24"></path></svg>
