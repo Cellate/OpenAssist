@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <intent>
+            <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
+        </intent>
+        <package android:name="org.futo.voiceinput" />
+        <package android:name="org.futo.inputmethod.latin" />
+        <package android:name="org.futo.inputmethod.latin.voice" />
+        <package android:name="com.futo.voiceinput" />
+        <package android:name="com.futo.inputmethod.latin" />
+        <package android:name="org.vosk" />
+        <package android:name="com.google.android.tts" />
+        <package android:name="com.google.android.googlequicksearchbox" />
+        <package android:name="com.heytap.speechassist" />
+        <package android:name="com.coloros.speechassist" />
+        <package android:name="com.samsung.android.bixby.agent" />
+        <package android:name="com.samsung.android.honeyboard" />
+    </queries>
+
+    <application
+        android:name=".OpenAssistApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.OpenAssist"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".WebActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|uiMode|density|layoutDirection|locale"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Accept shared images, PDFs, docs from any other app -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".OverlayActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/Theme.OpenAssist.Overlay"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true"
+            android:label="@string/title_settings"
+            android:launchMode="singleTop" />
+
+        <!-- Dynamic Launcher Aliases for Mascot App Icons -->
+        <activity-alias
+            android:name=".LauncherOwl"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_owl"
+            android:roundIcon="@mipmap/ic_launcher_owl_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherFox"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_fox"
+            android:roundIcon="@mipmap/ic_launcher_fox_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherBat"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_bat"
+            android:roundIcon="@mipmap/ic_launcher_bat_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherOtter"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_otter"
+            android:roundIcon="@mipmap/ic_launcher_otter_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherChameleon"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_chameleon"
+            android:roundIcon="@mipmap/ic_launcher_chameleon_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherTanuki"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_tanuki"
+            android:roundIcon="@mipmap/ic_launcher_tanuki_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherKitten"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_kitten"
+            android:roundIcon="@mipmap/ic_launcher_kitten_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherSprite"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_sprite"
+            android:roundIcon="@mipmap/ic_launcher_sprite_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherAxolotl"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_axolotl"
+            android:roundIcon="@mipmap/ic_launcher_axolotl_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherFirefly"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_firefly"
+            android:roundIcon="@mipmap/ic_launcher_firefly_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherWhale"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_whale"
+            android:roundIcon="@mipmap/ic_launcher_whale_round"
+            android:label="@string/app_name"
+            android:targetActivity=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <service
+            android:name=".AssistService"
+            android:exported="true"
+            android:permission="android.permission.BIND_VOICE_INTERACTION">
+            <meta-data
+                android:name="android.voice_interaction"
+                android:resource="@xml/interaction_service" />
+            <intent-filter>
+                <action android:name="android.service.voice.VoiceInteractionService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".AssistSessionService"
+            android:exported="true"
+            android:permission="android.permission.BIND_VOICE_INTERACTION" />
+
+        <service
+            android:name=".StubRecognitionService"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_RECOGNITION_SERVICE">
+            <intent-filter>
+                <action android:name="android.speech.RecognitionService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+        <provider
+            android:name=".SelectionProvider"
+            android:authorities="com.openassist.app.selection"
+            android:exported="false"
+            android:grantUriPermissions="true" />
+
+    </application>
+</manifest>
