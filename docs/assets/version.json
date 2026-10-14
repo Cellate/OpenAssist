@@ -1,0 +1,13 @@
+{
+  "version": "1.64.0",
+  "versionCode": 64,
+  "versionTag": "v.1.64.0",
+  "displayName": "v1.64.0",
+  "channel": "stable",
+  "releaseDate": "2026-10-14",
+  "githubRepo": "Cellate/OpenAssist",
+  "buildPackage": "OpenAssist_v.1.64.0.zip",
+  "apkName": "OpenAssist-v1.64.0.apk",
+  "minSdkVersion": 26,
+  "targetSdkVersion": 34
+}

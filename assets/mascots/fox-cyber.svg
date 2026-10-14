@@ -1,0 +1,15 @@
+<svg viewBox="0 0 256 256" width="256" height="256" fill="none" xmlns="http://www.w3.org/2000/svg" class=""><defs><linearGradient id="foxCybBodyDark" x1="40" y1="40" x2="216" y2="220" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FB923C"></stop><stop offset="50%" stop-color="#EA580C"></stop><stop offset="100%" stop-color="#C2410C"></stop></linearGradient><linearGradient id="foxCybBodyLight" x1="40" y1="40" x2="216" y2="220" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F97316"></stop><stop offset="100%" stop-color="#EA580C"></stop></linearGradient><linearGradient id="foxCybVisorGrad" x1="60" y1="100" x2="196" y2="160" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#38BDF8"></stop><stop offset="50%" stop-color="#60A5FA"></stop><stop offset="100%" stop-color="#818CF8"></stop></linearGradient></defs><path d="M 128,38
+            A 94 94 0 1 1 44,168
+            C 38,130 58,84 92,56
+            C 80,74 82,100 96,116
+            C 114,136 146,136 164,118
+            C 184,98 178,60 148,42
+            C 142,39 135,38 128,38 Z" fill="url(#foxCybBodyDark)"></path><path d="M 98,180
+              C 98,172 110,168 128,168
+              C 146,168 158,172 158,180
+              C 158,206 144,218 128,218
+              C 112,218 98,206 98,180 Z" fill="#FFFFFF" opacity="0.9"></path><path d="M 66,92 L 44,42 C 44,42 76,50 92,72 Z" fill="url(#foxCybBodyDark)"></path><path d="M 156,72 C 172,50 204,42 204,42 L 182,92 Z" fill="url(#foxCybBodyDark)"></path><path d="M 64,84 L 56,54 C 56,54 74,60 82,74 Z" fill="#60A5FA" opacity="0.8"></path><path d="M 166,74 C 174,60 192,54 192,54 L 184,84 Z" fill="#818CF8" opacity="0.8"></path><ellipse cx="124" cy="132" rx="58" ry="52" fill="url(#foxCybBodyDark)"></ellipse><path d="M 92,148 C 104,132 144,132 156,148 C 148,172 100,172 92,148 Z" fill="#FFFFFF"></path><rect x="118" y="122" width="12" height="8" rx="4" fill="#60A5FA"></rect><circle cx="94" cy="126" r="30" stroke="url(#foxCybVisorGrad)" stroke-width="6.5" fill="#FFFFFF"></circle><circle cx="154" cy="126" r="30" stroke="url(#foxCybVisorGrad)" stroke-width="6.5" fill="#FFFFFF"></circle><circle cx="66" cy="126" r="3.5" fill="#38BDF8"></circle><circle cx="182" cy="126" r="3.5" fill="#818CF8"></circle><ellipse cx="62" cy="150" rx="9" ry="5.5" fill="#F43F5E" opacity="0.4"></ellipse><ellipse cx="186" cy="150" rx="9" ry="5.5" fill="#F43F5E" opacity="0.4"></ellipse><circle cx="94" cy="126" r="17" fill="#0F172A"></circle><circle cx="154" cy="126" r="17" fill="#0F172A"></circle><circle cx="100" cy="120" r="6" fill="#FFFFFF"></circle><circle cx="160" cy="120" r="6" fill="#FFFFFF"></circle><circle cx="89" cy="131" r="2.5" fill="#FFFFFF"></circle><circle cx="149" cy="131" r="2.5" fill="#FFFFFF"></circle><ellipse cx="124" cy="150" rx="4.5" ry="3" fill="#431407"></ellipse><path d="M 117,157 C 120,161 124,161 124,157 C 124,161 128,161 131,157" stroke="#431407" stroke-width="3" stroke-linecap="round"></path><path d="M 124,36
+            C 124,46 121,49 117,51
+            C 121,53 124,56 124,66
+            C 124,56 127,53 131,51
+            C 127,49 124,46 124,36 Z" fill="#FBBF24"></path></svg>
