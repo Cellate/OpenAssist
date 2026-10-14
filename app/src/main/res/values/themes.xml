@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.OpenAssist" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowBackground">@color/background</item>
+    </style>
+    <style name="Theme.OpenAssist.Light" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#FFFFFFFF</item>
+        <item name="android:navigationBarColor">#FFFFFFFF</item>
+        <item name="android:windowBackground">#FFF8FAFC</item>
+        <item name="android:textColorPrimary">#FF0F172A</item>
+        <item name="android:textColorSecondary">#FF475569</item>
+    </style>
+    <style name="Theme.OpenAssist.Dark" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#FF1E293B</item>
+        <item name="android:navigationBarColor">#FF1E293B</item>
+        <item name="android:windowBackground">#FF0F172A</item>
+        <item name="android:textColorPrimary">#FFF8FAFC</item>
+        <item name="android:textColorSecondary">#FF94A3B8</item>
+    </style>
+    <style name="Theme.OpenAssist.Overlay" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.45</item>
+    </style>
+</resources>
