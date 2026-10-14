@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/web_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- Top Web Assistant Action Bar (Non-Scrollable, Fits All Across Screen) -->
+    <LinearLayout
+        android:id="@+id/web_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="6dp"
+        android:background="@color/surface">
+
+        <!-- Horizontally Scrollable Pills Container (Mascot Chip, AI Model, Language, Engine) -->
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scrollbars="none"
+            android:overScrollMode="never"
+            android:fillViewport="false"
+            android:clipToPadding="false"
+            android:clipChildren="false">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:clipToPadding="false"
+                android:clipChildren="false">
+
+                <!-- 1. Mascot Companion Chip (Adaptive Width & Padding, Zero Clipping) -->
+                <LinearLayout
+                    android:id="@+id/btn_web_mascot_chip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/bg_pill"
+                    android:clipToPadding="false"
+                    android:clipChildren="false"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <ImageView
+                        android:id="@+id/btn_web_mascot"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="Mascot Avatar"
+                        android:src="@drawable/ic_mascot_owl_orbital" />
+                    <TextView
+                        android:id="@+id/text_mascot_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="2dp"
+                        android:text="Ozzy"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false"
+                        android:singleLine="true" />
+                </LinearLayout>
+
+                <!-- 2. AI Model Switcher Pill (e.g. Gemini ▾) -->
+                <LinearLayout
+                    android:id="@+id/btn_model_switcher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/bg_pill"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView
+                        android:id="@+id/text_model_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gemini ▾"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:singleLine="true" />
+                </LinearLayout>
+
+                <!-- 3. Language Selector Pill -->
+                <LinearLayout
+                    android:id="@+id/btn_lang_switcher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="7dp"
+                    android:background="@drawable/bg_pill"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView
+                        android:id="@+id/text_lang_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="EN"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp"
+                        android:singleLine="true" />
+                </LinearLayout>
+
+                <!-- 4. Voice Input Engine Selector Pill -->
+                <LinearLayout
+                    android:id="@+id/btn_engine_switcher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="7dp"
+                    android:background="@drawable/bg_pill"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView
+                        android:id="@+id/text_engine_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Default"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp"
+                        android:singleLine="true" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- 5. Voice Transcription Button (Mic) -->
+        <ImageView
+            android:id="@+id/btn_web_mic"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="2dp"
+            android:padding="6dp"
+            android:contentDescription="Voice Dictation"
+            android:src="@drawable/ic_mic"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- 5B. Auto-Speak / Read Aloud Quick Toggle Button -->
+        <ImageView
+            android:id="@+id/btn_web_auto_speak"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="2dp"
+            android:padding="6dp"
+            android:contentDescription="Auto Speak Responses"
+            android:src="@drawable/ic_volume_up"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- 6. Settings Button -->
+        <ImageView
+            android:id="@+id/btn_web_settings"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="2dp"
+            android:padding="6dp"
+            android:contentDescription="Settings"
+            android:src="@drawable/ic_settings"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- 7. Far Right: Hamburger Menu Button (Extra Options + History) -->
+        <ImageView
+            android:id="@+id/btn_web_menu"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="6dp"
+            android:contentDescription="Menu"
+            android:src="@drawable/ic_menu"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+    <!-- Page Loading Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@id/web_top_bar"
+        android:visibility="gone" />
+
+    <!-- Full-Screen WebView -->
+    <WebView
+        android:id="@+id/web_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/progress_bar" />
+
+    <!-- Floating Audio Controller (Expanded Pill View) -->
+    <LinearLayout
+        android:id="@+id/layout_audio_controller"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_audio_bar"
+        android:elevation="8dp"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="8dp"
+        android:visibility="gone">
+
+        <!-- Speaker / Status Icon -->
+        <ImageView
+            android:id="@+id/img_audio_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_volume_up"
+            android:contentDescription="Audio Playback" />
+
+        <!-- Status / Speed Indicator -->
+        <TextView
+            android:id="@+id/text_audio_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="10dp"
+            android:text="Speaking..."
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:singleLine="true" />
+
+        <!-- Play / Pause Button -->
+        <ImageView
+            android:id="@+id/btn_audio_play_pause"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="7dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_pill"
+            android:src="@drawable/ic_pause"
+            android:contentDescription="Play/Pause"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Stop Button -->
+        <ImageView
+            android:id="@+id/btn_audio_stop"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="8dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_pill"
+            android:src="@drawable/ic_stop"
+            android:contentDescription="Stop Speech"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Speed Toggle Pill (1.0x, 1.25x, 1.5x) -->
+        <TextView
+            android:id="@+id/btn_audio_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:minWidth="42dp"
+            android:gravity="center"
+            android:paddingHorizontal="8dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_pill"
+            android:text="1.0x"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Minimize / Hide Button -->
+        <ImageView
+            android:id="@+id/btn_audio_minimize"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="6dp"
+            android:background="@drawable/bg_pill"
+            android:src="@drawable/ic_minimize"
+            android:contentDescription="Minimize Audio Bar"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <!-- Minimized Floating Audio Orb (Edge Badge) -->
+    <LinearLayout
+        android:id="@+id/layout_audio_orb"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:background="@drawable/bg_audio_orb"
+        android:elevation="8dp"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:id="@+id/btn_audio_orb_expand"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_volume_up"
+            android:contentDescription="Expand Audio Controller" />
+    </LinearLayout>
+
+</RelativeLayout>
